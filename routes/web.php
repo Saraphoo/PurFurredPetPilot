@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\PetController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -10,6 +11,14 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/pet-profiles', function () {
+        return Inertia::render('PetProfiles/Index');
+    })->name('pet-profiles');
+});
+
+Route::get('/pets', [PetController::class, 'index'])->name('pets.index');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
