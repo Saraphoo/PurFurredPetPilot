@@ -16,8 +16,36 @@ class PetController extends Controller
         $pets = $user->pets;
 
         // Pass the pets to the Inertia view
-        return Inertia::render('Pets/Index', [
+        return Inertia::render('Dashboard', [
             'pets' => $pets
         ]);
+    }
+
+    public function show()
+    {
+        return Inertia::render('PetProfile');
+    }
+
+    public function store()
+    {
+        // Validate the request
+        request()->validate([
+            'name' => 'required',
+            'type' => 'required',
+            'breed' => 'required',
+            'DOB' => 'required',
+        ]);
+
+        // Create a new pet
+        Pet::create([
+            'name' => request('name'),
+            'type' => request('type'),
+            'breed' => request('breed'),
+            'DOB' => request('age'),
+            'user_id' => Auth::id(),
+        ]);
+
+        // Redirect to the dashboard
+        return redirect()->route('dashboard');
     }
 }

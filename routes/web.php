@@ -8,9 +8,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard',[PetController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pet-profiles', function () {
@@ -18,7 +16,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('pet-profiles');
 });
 
-Route::get('/pets', [PetController::class, 'index'])->name('pets.index');
+Route::get('/petProfile', [PetController::class, 'show'])->name('pet.profile');
+Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
+Route::post('/petProfile', [PetController::class, 'store']);
+Route::put('/petProfile', [PetController::class, 'update']);
+Route::delete('/petProfile', [PetController::class, 'destroy']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

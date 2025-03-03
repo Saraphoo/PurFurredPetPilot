@@ -13,6 +13,16 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+defineProps<{
+    pets: {
+        id: number;
+        name: string;
+        type: string;
+        age: number;
+        petImage: string;
+    };
+}>();
+
 
 </script>
 
@@ -21,9 +31,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div v-for="pet in pets" :key="pet.id" class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <pet-profile-card pet="pet" />
+                    <pet-profile-card
+                        v-for="pet in pets" :key="pet"
+                        :pet = "$props.pets" />
                 </div>
             </div>
         </div>
