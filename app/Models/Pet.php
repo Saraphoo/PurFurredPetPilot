@@ -3,11 +3,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\Request;
 
 class Pet extends Model
 {
 
     use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -16,17 +18,18 @@ class Pet extends Model
     protected $fillable = [
         'name',
         'DOB',
-        'Type',
+        'type',
         'species',
+        'sex',
     ];
 
-    public static function factoryFromType(string $type): self
+   public static function factoryFromType(string $type): self
     {
         return match ($type){
             Type::Dog => Dog::factory(),
             Type::Cat => Cat::factory(),
             Type::Bird => Bird::factory(),
-            Type::Fish => Fish::factory(),
+           Type::Fish => Fish::factory(),
             Type::Reptile => Reptile::factory(),
             Type::Rabbit => Rabbit::factory(),
             Type::smallMammal => smallMammal::factory(),
@@ -34,46 +37,27 @@ class Pet extends Model
         };
     }
 
-    public function isDog(): bool
+    public function isType(string $type): bool
     {
-        return $this->Type === Type::Dog;
+    switch ($type) {
+        case 'Dog':
+            return $this->Type === Type::Dog;
+        case 'Cat':
+            return $this->Type === Type::Cat;
+        case 'Bird':
+            return $this->Type === Type::Bird;
+        case 'Fish':
+            return $this->Type === Type::Fish;
+        case 'Reptile':
+            return $this->Type === Type::Reptile;
+        case 'Rabbit':
+            return $this->Type === Type::Rabbit;
+        case 'smallMammal':
+            return $this->Type === Type::smallMammal;
+        default:
+            return false;
     }
-
-    public function isCat(): bool
-    {
-        return $this->Type === Type::Cat;
-    }
-
-    public function isBird(): bool
-    {
-        return $this->Type === Type::Bird;
-    }
-
-    public function isFish(): bool
-    {
-        return $this->Type === Type::Fish;
-    }
-
-    public function isReptile(): bool
-    {
-        return $this->Type === Type::Reptile;
-    }
-
-    public function isRabbit(): bool
-    {
-        return $this->Type === Type::Rabbit;
-    }
-
-    public function isSmallMammal() : bool
-    {
-        return $this->Type === Type::smallMammal;
-    }
-
-    public function showCreateForm()
-    {
-        return Inertia::render('Pets/Create');
-    }
-
+}
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -91,7 +75,7 @@ class Pet extends Model
         ]);
 
         // Store the new pet
-        Pet::create($validated);
+        Pet::store($validated);
 
         // Redirect back with success message
         return redirect()->route('pets.create')->with('success', 'Pet created successfully!');

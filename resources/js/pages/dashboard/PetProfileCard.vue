@@ -1,21 +1,26 @@
 <script setup lang="ts">
 
+import {onMounted} from "vue";
+
 defineProps<{
     pet: {
         id: number;
         name: string;
-        type: string;
-        age: number;
         petImage: string;
     };
 }>();
+
+onMounted(() => {
+    console.log(this);
+})
+
 
 </script>
 
 <template>
 <Card>
     <div class="relative mt-8 flex items-center gap-x-4">
-        <img src="{{pet.petImage}}" alt="pet.name" class="w-16 h-16 rounded-full" />
+
         <div class="text-sm/6">
             <p class="font-semibold text-gray-900">
                 <a href="#">

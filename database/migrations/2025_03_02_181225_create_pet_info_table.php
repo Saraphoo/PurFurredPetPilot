@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pet_info', function (Blueprint $table) {
+        Schema::create('pet_infos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pet_id')->constrained()->onDelete('cascade'); // Link to the pet
             $table->string('key');  // The attribute name (e.g., "habitat size", "water parameters")
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pet_info');
+        Schema::dropIfExists('pet_infos');
     }
 };

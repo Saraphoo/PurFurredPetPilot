@@ -2,26 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\PetInfo;
 use Illuminate\Database\Seeder;
+use App\Models\PetInfo;
 
 class PetInfoSeeder extends Seeder
 {
     public function run()
     {
-        PetInfo::create([
-            'pet_id' => 1,
+        // For Pet 1
+        $pet1Attributes = [
             'habitat_size' => 'Large yard',
             'exercise_needs' => 'High',
             'daily_supplements' => 'Multivitamin',
             'food_schedule' => 'Twice a day',
-        ]);
+        ];
 
-        PetInfo::create([
-            'pet_id' => 2,
+        foreach ($pet1Attributes as $key => $value) {
+            PetInfo::create([
+                'pet_id' => 1,
+                'key' => $key,
+                'value' => $value,
+            ]);
+        }
+
+        // For Pet 2
+        $pet2Attributes = [
             'habitat_size' => 'Indoor space',
             'exercise_needs' => 'Moderate',
             'food_schedule' => 'free feeding',
-        ]);
+        ];
+
+        foreach ($pet2Attributes as $key => $value) {
+            PetInfo::create([
+                'pet_id' => 2,
+                'key' => $key,
+                'value' => $value,
+            ]);
+        }
     }
 }

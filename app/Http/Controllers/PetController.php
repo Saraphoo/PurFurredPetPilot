@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pet;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,7 @@ class PetController extends Controller
 
         // Retrieve pets associated with the user
         $pets = $user->pets;
+        Log::info($pets);
 
         // Pass the pets to the Inertia view
         return Inertia::render('Dashboard', [
@@ -21,9 +23,9 @@ class PetController extends Controller
         ]);
     }
 
-    public function show()
+    public function create()
     {
-        return Inertia::render('PetProfile');
+        return Inertia::render('pets/Create');
     }
 
     public function store()
@@ -31,18 +33,19 @@ class PetController extends Controller
         // Validate the request
         request()->validate([
             'name' => 'required',
+            'sex' => 'nullable',
             'type' => 'required',
             'breed' => 'required',
-            'DOB' => 'required',
+            'age' => 'required',
         ]);
-
+        Log::info(request('name'));
         // Create a new pet
-        Pet::create([
+        Pet::query()->create([
             'name' => request('name'),
             'type' => request('type'),
+            'sex' => 'f',
             'breed' => request('breed'),
             'DOB' => request('age'),
-            'user_id' => Auth::id(),
         ]);
 
         // Redirect to the dashboard

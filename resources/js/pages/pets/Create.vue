@@ -1,18 +1,24 @@
 <script lang="ts">
 import { useForm } from '@inertiajs/inertia-vue3';
+import AppLayout from "@/layouts/AppLayout.vue";
 
 export default {
+    components: {AppLayout},
     setup() {
         const form = useForm({
             name: '',
-            age: '',
+            sex: '',
+            DOB: '',
             type: '',
-            species: ''
+            breed: ''
         });
 
         const submit = () => {
-            form.post('/pets', {
-                onSuccess: () => form.reset()
+            form.post(route('pets.store'), {
+                onSuccess: () => {
+                    debugger;
+                    form.reset()
+                }
             });
         };
 
@@ -25,38 +31,44 @@ export default {
 };
 </script>
 <template>
+    <AppLayout :breadcrumbs="breadcrumbs">
     <div>
         <h1>Create a New Pet</h1>
         <form @submit.prevent="submit">
             <div>
                 <label for="name">Name</label>
                 <input v-model="form.name" type="text" id="name" />
-                <span v-if="errors.name">{{ errors.name }}</span>
+                <span v-if="form.errors.name">{{ form.errors.name }}</span>
             </div>
 
             <div>
-                <label for="age">Age</label>
-                <input v-model="form.age" type="number" id="age" />
-                <span v-if="errors.age">{{ errors.age }}</span>
+                <label for="sex">Gender</label>
+                <input v-model="form.sex" type="text" id="sex" />
+                <span v-if="form.errors.sex">{{ form.errors.sex }}</span>
+            </div>
+
+            <div>
+                <label for="DOB">Date of Birth</label>
+                <input v-model="form.DOB" type="date" id="DOB" />
+                <span v-if="form.errors.DOB">{{ form.errors.DOB }}</span>
             </div>
 
             <div>
                 <label for="type">Type (e.g. Dog, Cat)</label>
                 <input v-model="form.type" type="text" id="type" />
-                <span v-if="errors.type">{{ errors.type }}</span>
+                <span v-if="form.errors.type">{{ form.errors.type }}</span>
             </div>
 
             <div>
                 <label for="species">Species/Breed</label>
-                <input v-model="form.species" type="text" id="species" />
-                <span v-if="errors.species">{{ errors.species }}</span>
+                <input v-model="form.breed" type="text" id="species" />
+                <span v-if="form.errors.breed">{{ form.errors.breed }}</span>
             </div>
 
             <button type="submit">Create Pet</button>
         </form>
-
-        <p v-if="flash.success">{{ flash.success }}</p>
     </div>
+    </AppLayout>
 </template>
 
 
