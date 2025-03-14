@@ -7,6 +7,8 @@ defineProps<{
         id: number;
         name: string;
         petImage: string;
+        type: string;
+        DOB: string;
     };
 }>();
 
@@ -25,10 +27,10 @@ onMounted(() => {
             <p class="font-semibold text-gray-900">
                 <a href="#">
                     <span class="absolute inset-0"></span>
-                    t{{pet.name}}
+                    {{pet.name}}
                 </a>
             </p>
-            <p class="text-gray-600">t{{pet.type}} | t{{pet.age}}</p>
+            <p class="text-gray-600">{{pet.type}} | {{pet.age}}</p>
         </div>
     </div>
 </Card>

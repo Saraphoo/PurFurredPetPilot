@@ -4,9 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+*/
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -45,8 +49,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function pets()
+    public function pets(): BelongsToMany
     {
-        return $this->belongsToMany(Pet::class);
+        return $this->belongsToMany(Pet::class, 'pet_user');
     }
 }

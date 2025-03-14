@@ -5,12 +5,13 @@ use App\Models\Pet;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\RedirectResponse;
 class PetController extends Controller
 {
     public function index()
     {
         // Get the currently authenticated user
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Retrieve pets associated with the user
@@ -28,27 +29,43 @@ class PetController extends Controller
         return Inertia::render('pets/Create');
     }
 
-    public function store()
+    public function store(): RedirectResponse
     {
         // Validate the request
         request()->validate([
-            'name' => 'required',
-            'sex' => 'nullable',
-            'type' => 'required',
-            'breed' => 'required',
-            'age' => 'required',
-        ]);
-        Log::info(request('name'));
-        // Create a new pet
-        Pet::query()->create([
-            'name' => request('name'),
-            'type' => request('type'),
-            'sex' => 'f',
-            'breed' => request('breed'),
-            'DOB' => request('age'),
+            'name' => 'required|string|max:255',
+            'DOB' => 'required|date',
+            'sex' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'species' => 'nullable|string|max:255',
+            'breed' => 'nullable|string|max:255',
+            'neutered' => 'nullable|boolean',
+            'color' => 'nullable|string|max:255',
+            'weight' => 'nullable|string|max:255',
+            'height' => 'nullable|string|max:255',
+            'length' => 'nullable|string|max:255',
         ]);
 
+        // Create a new pet
+        $pet = Pet::query()->create([
+            'name' => request('name'),
+            'DOB' => request('DOB'),
+            'type' => request('type'),
+            'sex' => request('sex'),
+            'species' => request('species'),
+            'breed' => request('breed'),
+            'neutered' => request('neutered'),
+            'color' => request('color'),
+            'weight' => request('weight'),
+            'height' => request('height'),
+            'length' => request('length'),
+        ]);
+
+        $pet->users()->attach(Auth::id());
+
+
+
         // Redirect to the dashboard
-        return redirect()->route('dashboard');
+        return to_route('dashboard')->with('success', 'Pet created.');
     }
 }

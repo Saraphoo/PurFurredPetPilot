@@ -3,8 +3,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Client\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property Carbon $DOB
+ * @property string $type
+ * @property string|null $species
+ * @property string|null $breed
+ * @property bool|null $neutered
+ * @property string|null $color
+ * @property string|null $weight
+ * @property string|null $height
+ * @property string|null $length
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ */
 class Pet extends Model
 {
 
@@ -23,67 +40,17 @@ class Pet extends Model
         'sex',
     ];
 
-   public static function factoryFromType(string $type): self
+
+
+
+    public function users(): BelongsToMany
     {
-        return match ($type){
-            Type::Dog => Dog::factory(),
-            Type::Cat => Cat::factory(),
-            Type::Bird => Bird::factory(),
-           Type::Fish => Fish::factory(),
-            Type::Reptile => Reptile::factory(),
-            Type::Rabbit => Rabbit::factory(),
-            Type::smallMammal => smallMammal::factory(),
-            default => User::factory()->type($type),
-        };
+        return $this->belongsToMany(User::class, 'pet_user');
     }
-
-    public function isType(string $type): bool
+    protected function casts(): array
     {
-    switch ($type) {
-        case 'Dog':
-            return $this->Type === Type::Dog;
-        case 'Cat':
-            return $this->Type === Type::Cat;
-        case 'Bird':
-            return $this->Type === Type::Bird;
-        case 'Fish':
-            return $this->Type === Type::Fish;
-        case 'Reptile':
-            return $this->Type === Type::Reptile;
-        case 'Rabbit':
-            return $this->Type === Type::Rabbit;
-        case 'smallMammal':
-            return $this->Type === Type::smallMammal;
-        default:
-            return false;
-    }
-}
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'DOB' => 'nullable|integer|min:0',
-            'type' => 'required|string|max:255',
-            'sex' => 'nullable|string|max:255',
-            'species' => 'nullable|string|max:255',
-            'breed' => 'nullable|string|max:255',
-            'neutered' => 'nullable|boolean',
-            'color' => 'nullable|string|max:255',
-            'weight' => 'nullable|integer|min:0',
-            'height' => 'nullable|integer|min:0',
-            'length' => 'nullable|integer|min:0',
-        ]);
-
-        // Store the new pet
-        Pet::store($validated);
-
-        // Redirect back with success message
-        return redirect()->route('pets.create')->with('success', 'Pet created successfully!');
-    }
-
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
+        return [
+            'DOB' => 'date',
+        ];
     }
 }
