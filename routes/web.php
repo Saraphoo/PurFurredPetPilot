@@ -19,8 +19,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/pet/show', [PetController::class, 'show'])->name('pet.show');
 Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
 Route::post('/pets/store', [PetController::class, 'store'])->middleware(['auth'])->name('pets.store');
-Route::put('/petProfile', [PetController::class, 'update']);
-Route::delete('/petProfile', [PetController::class, 'destroy']);
+Route::put('/pet/show', [PetController::class, 'update']);
+Route::delete('/pet/show', [PetController::class, 'destroy']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
