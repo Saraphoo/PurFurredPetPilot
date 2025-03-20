@@ -16,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('pet-profiles');
 });
 
-Route::get('/petProfile', [PetController::class, 'show'])->name('pet.profile');
+Route::get('/pet/show', [PetController::class, 'show'])->name('pet.show');
 Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
 Route::post('/pets/store', [PetController::class, 'store'])->middleware(['auth'])->name('pets.store');
 Route::put('/petProfile', [PetController::class, 'update']);

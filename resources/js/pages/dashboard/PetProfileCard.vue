@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import {onMounted} from "vue";
+import {computed, onMounted} from "vue";
 import {Card} from "@/components/ui/card";
 
-defineProps<{
+const props = defineProps<{
     pet: {
         id: number;
         name: string;
@@ -17,29 +17,52 @@ onMounted(() => {
     console.log(this);
 })
 
+const petAge = computed(() => {
+    const dob = new Date(props.pet.DOB);
+    const today = new Date();
+
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+
+    if (months < 0 || (months === 0 && today.getDate() < dob.getDate())) {
+        years--;
+        months += 12;
+    }
+
+    return {
+        years,
+        months
+    };
+});
+
+const formattedAge = computed(() => {
+    const { years, months } = petAge.value;
+    const yearText = years === 1 ? '1 year' : `${years} years`;
+    const monthText = months === 1 ? '1 month' : `${months} months`;
+
+    return `${yearText} & ${monthText}`;
+});
 
 </script>
 
 <template>
-<Card class ="items-center">
-    <div class="relative mt-8 flex items-center gap-x-4">
-        <div v-if="pet.petImage">
-            <img :src="pet.petImage" alt="pet image" class="w-16 h-16 rounded-full" />
+    <Card class="flex flex-col items-center p-6 space-y-4">
+        <!-- Image Section -->
+        <div v-if="pet.petImage" class="flex justify-center w-full">
+            <img :src="pet.petImage" alt="pet image" class="w-24 h-24 rounded-full" />
         </div>
-            <div v-else class="w-16 h-16 rounded-full bg-gray-200">
-            </div>
-        <div class="text-sm/6">
-            <p class="font-semibold text-gray-900">
-                <a href="#">
-                    <span class="absolute inset-0"></span>
-                    {{pet.name}}
-                </a>
-            </p>
-            <p class="text-gray-600">{{pet.type}} | {{pet.DOB}}</p>
+        <div v-else class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+            <!-- Placeholder for pet image -->
         </div>
-    </div>
-</Card>
+
+        <!-- Pet Information Section -->
+        <div class="text-center">
+            <p class="font-semibold text-lg text-gray-900">{{ pet.name }}</p>
+            <p class="text-gray-600">{{ pet.type }} | {{ formattedAge }}</p>
+        </div>
+    </Card>
 </template>
+
 
 <style scoped>
 
