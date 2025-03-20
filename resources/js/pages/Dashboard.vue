@@ -17,8 +17,10 @@ defineProps<{
     pets: {
         id: number;
         name: string;
-
-    };
+        petImage: string | null;
+        type: string;
+        DOB: string;
+    }[] | null;
 }>();
 
 
@@ -30,7 +32,7 @@ defineProps<{
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="grid auto-rows-min gap-4 md:grid-cols-3"
-                 v-if="pets.length !== 0">
+                 v-if="pets">
                 <div v-for ="pet in pets" :key="pet.id">
                     <PetProfileCard :pet = pet />
                 </div>

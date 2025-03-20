@@ -2,12 +2,15 @@
 import { defineProps } from 'vue';
 
 // Define props for pet
-defineProps({
+const props = defineProps<{
     pet: {
-        type: Object,
-        required: true,
-    },
-});
+        id: number;
+        name: string;
+        petImage: string | null;
+        type: string;
+        DOB: string;
+    };
+}>();
 </script>
 
 <template>

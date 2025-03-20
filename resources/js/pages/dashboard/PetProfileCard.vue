@@ -2,6 +2,7 @@
 
 import {computed, onMounted} from "vue";
 import {Card} from "@/components/ui/card";
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     pet: {
@@ -43,10 +44,16 @@ const formattedAge = computed(() => {
     return `${yearText} & ${monthText}`;
 });
 
+function goToPetProfile(petId : number) {
+    router.get(`/pets/show/${petId}`);
+}
+
 </script>
 
 <template>
-    <Card class="flex flex-col items-center p-6 space-y-4">
+    <Card  :key="pet.id"
+           @click="goToPetProfile(pet.id)"
+           class="flex flex-col items-center p-6 space-y-4">
         <!-- Image Section -->
         <div v-if="pet.petImage" class="flex justify-center w-full">
             <img :src="pet.petImage" alt="pet image" class="w-24 h-24 rounded-full" />
