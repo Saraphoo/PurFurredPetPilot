@@ -71,9 +71,28 @@ class PetController extends Controller
 
     public function show(Pet $pet)
     {
+        $pet->load('petInfo');
         // Return the Inertia response with the pet's data
         return Inertia::render('pets/Show', [
             'pet' => $pet,
+            'petInfo' => $pet->petInfo,
         ]);
     }
+
+    public function storePetInfo(Request $request, Pet $pet)
+    {
+        $request->validate([
+            'key' => 'required|string|max:255',
+            'value' => 'required|string|max:255',
+        ]);
+
+        // Create or update the PetInfo
+        $pet->petInfo()->updateOrCreate(
+            ['key' => $request->input('key')],
+            ['value' => $request->input('value')]
+        );
+
+        return back()->with('success', 'Pet information saved.');
+    }
+
 }

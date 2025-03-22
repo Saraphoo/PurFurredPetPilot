@@ -40,9 +40,6 @@ class Pet extends Model
         'sex',
     ];
 
-
-
-
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'pet_user');
@@ -53,4 +50,11 @@ class Pet extends Model
             'DOB' => 'date',
         ];
     }
+
+    // In your Pet model
+    public function petInfo()
+    {
+        return $this->hasMany(PetInfo::class);
+    }
+
 }

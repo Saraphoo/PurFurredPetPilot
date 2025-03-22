@@ -10,7 +10,7 @@ const props = defineProps<{
         name: string;
         petImage: string | null;
         type: string;
-        DOB: string;
+        DOB: string | null;
     };
 }>();
 
@@ -19,6 +19,10 @@ onMounted(() => {
 })
 
 const petAge = computed(() => {
+    if(!props.pet.DOB) {
+        return null;
+    }
+
     const dob = new Date(props.pet.DOB);
     const today = new Date();
 
@@ -37,6 +41,10 @@ const petAge = computed(() => {
 });
 
 const formattedAge = computed(() => {
+    if(!petAge.value){
+        return;
+    }
+
     const { years, months } = petAge.value;
     const yearText = years === 1 ? '1 year' : `${years} years`;
     const monthText = months === 1 ? '1 month' : `${months} months`;
