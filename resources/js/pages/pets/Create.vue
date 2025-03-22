@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/inertia-vue3';
 import AppLayout from "@/layouts/AppLayout.vue";
 import { type BreadcrumbItem } from '@/types';
+import {computed, ref} from "vue";
 
 // Initialize the form with default values
 const form = useForm({
@@ -16,6 +17,39 @@ const form = useForm({
     height: '',
     length: '',
     sex: '',
+});
+
+
+// Dropdown options for pet types and species
+const petTypes = ref([
+    { label: 'Dog', value: 'dog' },
+    { label: 'Cat', value: 'cat' },
+    { label: 'Bird', value: 'bird' },
+    { label: 'Reptile', value: 'reptile' },
+    { label: 'Amphibian', value: 'amphibian' },
+    { label: 'Rodent', value: 'rodent' },
+    { label: 'Rabbit', value: 'rabbit' },
+    { label: 'Fish', value: 'fish' },
+    { label: 'Invertebrate', value: 'invertebrate' },
+    { label: 'Other', value: 'other' },
+]);
+
+const speciesOptions = ref({
+    dog: ['Golden Retriever', 'Bulldog', 'Poodle'],
+    cat: ['Siamese', 'Persian', 'Maine Coon'],
+    bird: ['Parrot', 'Canary', 'Sparrow'],
+    reptile: ['Iguana', 'Gecko', 'Snake'],
+    amphibian:['frog','turtle'],
+    rodent: ['mouse','hamster', 'guinea pig', 'gerbil'],
+    rabbit: ['English Spot', 'Rex', 'mini rex', 'holland lop'],
+    fish: ['guppy', 'betta', 'Cory Catfish'],
+    invertebrate: ['snail', 'hermit crab', 'shrimp', 'spider'],
+    other: ['exotic']
+});
+
+// Computed property to get species based on selected type
+const availableSpecies = computed(() => {
+    return speciesOptions.value[form.type] || [];
 });
 
 // Define the breadcrumbs for navigation
@@ -44,88 +78,67 @@ defineProps<{
 </script>
 
 <template>
-    <!-- Use the AppLayout component and pass breadcrumbs -->
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create a New Pet</h1>
             <form @submit.prevent="submit" class="space-y-4">
-                <!-- Form fields for pet details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Name and Date of Birth fields -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                        <input v-model="form.name" type="text" id="name" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
+                        <input v-model="form.name" type="text" id="name" class="mt-1 block w-full" />
                         <span v-if="form.errors.name" class="text-red-600 text-sm">{{ form.errors.name }}</span>
                     </div>
-
                     <div>
                         <label for="DOB" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
-                        <input v-model="form.DOB" type="date" id="DOB" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
+                        <input v-model="form.DOB" type="date" id="DOB" class="mt-1 block w-full" />
                         <span v-if="form.errors.DOB" class="text-red-600 text-sm">{{ form.errors.DOB }}</span>
                     </div>
 
+                    <!-- Pet Type Dropdown -->
                     <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type (e.g. Dog, Cat)</label>
-                        <input v-model="form.type" type="text" id="type" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
+                        <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
+                        <select v-model="form.type" id="type" class="mt-1 block w-full">
+                            <option value="" disabled>Select Type</option>
+                            <option v-for="type in petTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+                        </select>
                         <span v-if="form.errors.type" class="text-red-600 text-sm">{{ form.errors.type }}</span>
                     </div>
 
+                    <!-- Species Dropdown (Dependent on Type) -->
                     <div>
                         <label for="species" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Species</label>
-                        <input v-model="form.species" type="text" id="species" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
+                        <select v-model="form.species" id="species" class="mt-1 block w-full" :disabled="!form.type">
+                            <option value="" disabled>Select Species</option>
+                            <option v-for="species in availableSpecies" :key="species">{{ species }}</option>
+                        </select>
                         <span v-if="form.errors.species" class="text-red-600 text-sm">{{ form.errors.species }}</span>
                     </div>
 
+                    <!-- Sex Dropdown -->
                     <div>
-                        <label for="breed" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Breed</label>
-                        <input v-model="form.breed" type="text" id="breed" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
-                        <span v-if="form.errors.breed" class="text-red-600 text-sm">{{ form.errors.breed }}</span>
+                        <label for="sex" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sex</label>
+                        <select v-model="form.sex" id="sex" class="mt-1 block w-full">
+                            <option value="" disabled>Select Sex</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                        <span v-if="form.errors.sex" class="text-red-600 text-sm">{{ form.errors.sex }}</span>
                     </div>
 
+                    <!-- Neutered Checkbox -->
                     <div>
                         <label for="neutered" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Neutered</label>
-                        <input v-model="form.neutered" type="checkbox" id="neutered" class="mt-1 block dark:bg-gray-700 dark:border-gray-600" />
+                        <input v-model="form.neutered" type="checkbox" id="neutered" class="mt-1 block" />
                         <span v-if="form.errors.neutered" class="text-red-600 text-sm">{{ form.errors.neutered }}</span>
                     </div>
 
-                    <div>
-                        <label for="color" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
-                        <input v-model="form.color" type="text" id="color" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
-                        <span v-if="form.errors.color" class="text-red-600 text-sm">{{ form.errors.color }}</span>
-                    </div>
-
-                    <div>
-                        <label for="weight" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Weight</label>
-                        <input v-model="form.weight" type="text" id="weight" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
-                        <span v-if="form.errors.weight" class="text-red-600 text-sm">{{ form.errors.weight }}</span>
-                    </div>
-
-                    <div>
-                        <label for="height" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Height</label>
-                        <input v-model="form.height" type="text" id="height" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
-                        <span v-if="form.errors.height" class="text-red-600 text-sm">{{ form.errors.height }}</span>
-                    </div>
-
-                    <div>
-                        <label for="length" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Length</label>
-                        <input v-model="form.length" type="text" id="length" class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100" />
-                        <span v-if="form.errors.length" class="text-red-600 text-sm">{{ form.errors.length }}</span>
-                    </div>
+                    <!-- Other fields (e.g., breed, color, etc.) go here -->
                 </div>
 
-                <!-- Sex input -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sex</label>
-                    <div class="mt-1 flex items-center">
-                        <input v-model="form.sex" type="radio" id="male" value="M" class="mr-2 dark:bg-gray-700 dark:border-gray-600" />
-                        <label for="male" class="mr-4 dark:text-gray-300">Male</label>
-                        <input v-model="form.sex" type="radio" id="female" value="F" class="mr-2 dark:bg-gray-700 dark:border-gray-600" />
-                        <label for="female" class="dark:text-gray-300">Female</label>
-                    </div>
-                    <span v-if="form.errors.sex" class="text-red-600 text-sm">{{ form.errors.sex }}</span>
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600">Create Pet</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md shadow">Create Pet</button>
             </form>
         </div>
     </AppLayout>
 </template>
+

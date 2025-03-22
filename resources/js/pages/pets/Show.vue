@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import {computed, defineProps} from 'vue';
+import {Button} from "@/components/ui/button";
+import {router} from "@inertiajs/vue3";
 
 // Define props for pet
 const props = defineProps<{
     pet: {
         id: number;
         name: string;
+        species: string;
         petImage: string | null;
         type: string;
         DOB: string | null;
@@ -51,12 +54,17 @@ const formattedAge = computed(() => {
     return `${yearText} & ${monthText}`;
 });
 
+function goToDashboard() {
+    router.get(`/dashboard`);
+}
+
 </script>
 
 <template>
-    <div class="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-4">
+    <div class="p-6 max-w-6xl mx-auto bg-white rounded-xl shadow-md space-y-4">
+        <button @click="goToDashboard()" class="text-white hover:underline bg-gray-400 rounded px-2">Back to Dashboard</button>
         <!-- Profile Section -->
-        <div class="flex items-center">
+        <div class="flex items-center justify-center">
             <!-- Profile Image -->
             <div v-if="pet.petImage" class="w-40 h-40 rounded-full bg-gray-300 overflow-hidden">
                 <img
@@ -67,11 +75,12 @@ const formattedAge = computed(() => {
             </div>
             <div v-else class="w-40 h-40 rounded-full bg-gray-200 flex">
             </div>
-
+        </div>
+        <div class="flex items-center justify-center text-center">
             <!-- Profile Information -->
-            <div class="ml-6">
+            <div>
                 <h1 class="text-2xl font-bold text-gray-800">{{ pet.name }}</h1>
-                <p class="text-gray-600">{{ pet.type }}</p>
+                <p class="text-gray-600">{{ pet.type }} <span v-if="pet.species"> | {{pet.species}}</span> </p>
                 <p class="text-gray-600">{{ formattedAge }}</p>
             </div>
         </div>
