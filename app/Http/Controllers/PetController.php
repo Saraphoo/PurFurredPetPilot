@@ -69,12 +69,10 @@ class PetController extends Controller
         return to_route('dashboard')->with('success', 'Pet created.');
     }
 
-    public function show($id)
+    public function show(Pet $pet)
     {
-        $pet = Pet::findOrFail($id);
-
         // Return the Inertia response with the pet's data
-        return Inertia::render('Pets/Show', [
+        return Inertia::render('pets/Show', [
             'pet' => $pet,
         ]);
     }

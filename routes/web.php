@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PetController;
 
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
@@ -13,10 +14,14 @@ Route::get('dashboard', [PetController::class, 'index'])->middleware(['auth', 'v
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pets/show', function () {
         return Inertia::render('pets/Show');
-    })->name('pet-profiles');
+    })->name('pets.show');
 });
 
-Route::get('/pets/show', [PetController::class, 'show'])->name('pet.show');
+Route::get('/users/{user}', function (User $user) {
+    return $user->email;
+});
+
+Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
 Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
 Route::post('/pets/store', [PetController::class, 'store'])->middleware(['auth'])->name('pets.store');
 Route::put('/pets/show', [PetController::class, 'update']);
