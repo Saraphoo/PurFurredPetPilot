@@ -60,6 +60,16 @@ const formattedAge = computed(() => {
     return `${yearText} & ${monthText}`;
 });
 
+// Computed function to handle the display mode for pet info
+const displayPetInfo = computed(() => {
+    if (!isEditing.value) {
+        // View Mode: plain text display of key-value pairs
+        return props.petInfo;
+    }
+    // Edit Mode: editable form fields
+    return editablePetInfo;
+});
+
 // Possible button options for adding details
 const possibleDetails = ref([
     { key: 'meal', label: 'Add Meal Details', action: () => alert('Add Meal Details button clicked') },
@@ -100,6 +110,11 @@ function submitEdit() {
     console.log('Edited Pet Data:', editablePet);
     console.log('Edited Additional Pet Info:', editablePetInfo);
     isEditing.value = false;
+}
+
+// Function to add a new detail (triggered from the drawer)
+function addDetail(detail: { key: string; value: string }) {
+    editablePetInfo.push(detail);
 }
 
 function goToDashboard() {
