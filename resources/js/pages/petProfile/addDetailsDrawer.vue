@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import {ref} from 'vue';
+import {defineProps, defineEmits} from 'vue';
 
 // Props to accept data for buttons
 const props = defineProps<{
     buttons: Array<{ label: string, action: () => void }>
 }>();
+
+const emit = defineEmits(['close']);
 
 
 // Ref to control drawer visibility
@@ -13,10 +16,10 @@ const isDrawerOpen = ref(true);
 // Function to close the drawer
 function closeDrawer() {
     isDrawerOpen.value = false;
+    emit('close');
 }
 
-// Emit function to close the drawer from the parent
-defineEmits(['close']);
+
 </script>
 
 <template>
