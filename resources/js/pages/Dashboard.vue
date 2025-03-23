@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import PetProfileCard from "@/pages/dashboard/PetProfileCard.vue";
+import PetProfileCard from "@/components/dashboard/PetProfileCard.vue";
 
 
 

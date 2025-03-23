@@ -2,7 +2,7 @@
 import {computed, defineProps, reactive, ref} from 'vue';
 import {Button} from "@/components/ui/button";
 import {router} from "@inertiajs/vue3";
-import AddDetailsDrawer from '../petProfile/addDetailsDrawer.vue';
+import AddDetailsDrawer from '@/components/petProfile/addDetailsDrawer.vue';
 
 // Define props for pet
 const props = defineProps<{
