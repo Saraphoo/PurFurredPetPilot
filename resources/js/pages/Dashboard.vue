@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PetProfileCard from "@/components/dashboard/PetProfileCard.vue";
+import Chatbot from "@/components/chatbot/Chatbot.vue";
 
 
 
@@ -23,7 +24,6 @@ defineProps<{
     }[] | null;
 }>();
 
-
 </script>
 
 <template>
@@ -41,5 +41,6 @@ defineProps<{
                 <div>No pets to display</div>
             </div>
         </div>
+        <Chatbot/>
     </AppLayout>
 </template>

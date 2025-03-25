@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PetController;
+use OpenAI\Laravel\Facades\OpenAI;
 
 
 Route::get('/', function () {
@@ -15,6 +17,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pets/show', function () {
         return Inertia::render('pets/Show');
     })->name('pets.show');
+});
+
+Route::get('/', function(){
+    $chat = new \App\AI\Chat();
+    $response= $chat
+        ->systemMessage('You are acting as an expert assistant')
+        ->send('message to the chatbot here');
+    return view('chatbot', ['response' => $response]);
+});
+
+
+Route::post('/dashboard/test-openai', function (Request $request) {
+    $userMessage = $request->input('message');
+
+    // OpenAI request with user's message
+    $response = OpenAI::completions()->create([
+        'model' => 'gpt-4o-mini',
+        'prompt' => $userMessage,
+        'max_tokens' => 10, // Adjust based on desired response length
+    ]);
+
+    return response()->json(['message' => $response->choices[0]->text]);
 });
 
 Route::get('/users/{user}', function (User $user) {
