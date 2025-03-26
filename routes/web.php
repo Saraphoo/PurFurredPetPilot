@@ -28,6 +28,32 @@ Route::get('/', function(){
 });
 
 
+Route::get('/', function() {
+//    dd(new \App\AI\PetPilotAssistant(config('services.openai.assistant')));
+    $assistant = new \App\AI\PetPilotAssistant(config('services.openai.assistant'));
+
+    $assistant->acceptFile(storage_path('docs/file.md'));
+
+    $run = OpenAI::threads()->createAndRun([
+        'assistant_id' => $assistant->getId(),
+        'thread'=>[
+            'messages'=>[
+                ['role'=>'user', 'content'=>'message to the chatbot here']
+            ],
+            ]
+        ]);
+    do {
+        sleep(1);
+        $run = OpenAI::threads()->runs()->retrieve(
+            threadId: $run->threadId,
+            runId: $run->id
+        );
+    }while($run->status !== 'completed');
+
+    OpenAI::threads()->messages()->list($run->threadId);
+   });
+
+
 Route::post('/dashboard/test-openai', function (Request $request) {
     $userMessage = $request->input('message');
 
