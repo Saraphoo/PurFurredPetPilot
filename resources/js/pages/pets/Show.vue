@@ -3,8 +3,18 @@ import {computed, defineProps, reactive, ref} from 'vue';
 import {Button} from "@/components/ui/button";
 import {router} from "@inertiajs/vue3";
 import AddDetailsDrawer from '@/components/petProfile/addDetailsDrawer.vue';
+import Chatbot from '@/components/chatbot/Chatbot.vue';
+import ActivityDetails from '@/components/petProfile/details/ActivityDetails.vue';
 
-// Define props for pet
+// Add a type for the pet info items
+interface PetInfoItem {
+    key: string;
+    value: string;
+    component?: string;
+    componentData?: any;
+}
+
+// Update the props type to include possible component data
 const props = defineProps<{
     pet: {
         id: number;
@@ -14,7 +24,7 @@ const props = defineProps<{
         type: string;
         DOB: string | null;
     };
-    petInfo: Array<{ key: string, value: string }>
+    petInfo: Array<PetInfoItem>;
 }>();
 
 // Drawer visibility state
@@ -76,7 +86,28 @@ const possibleDetails = ref([
     { key: 'habitat', label: 'Add Habitat Details', action: () => alert('Add Habitat Details button clicked') },
     { key: 'health', label: 'Add Health Details', action: () => alert('Add Health Details button clicked') },
     { key: 'behavior', label: 'Add Behavior Details', action: () => alert('Add Behavior Details button clicked') },
-    { key: 'exercise', label: 'Add Exercise Details', action: () => alert('Add Exercise Details button clicked') }
+    { key: 'exercise', label: 'Add Exercise Details', action: () => alert('Add Exercise Details button clicked') },
+    { 
+        key: 'activity', 
+        label: 'Add Activity Details', 
+        component: 'ActivityDetails',
+        action: () => {
+            addDetail({
+                key: 'activity',
+                value: 'Activity Log',
+                component: 'ActivityDetails',
+                componentData: {
+                    lastActivity: '',
+                    activityType: '',
+                    duration: 0,
+                    intensity: 'Moderate',
+                    notes: '',
+                    timestamp: new Date().toISOString(),
+                }
+            });
+            closeDetailsDrawer();
+        }
+    },
 ]);
 
 // Computed to filter out the buttons that are already present in `petInfo`
@@ -112,9 +143,17 @@ function submitEdit() {
     isEditing.value = false;
 }
 
-// Function to add a new detail (triggered from the drawer)
-function addDetail(detail: { key: string; value: string }) {
+// Function to add a new detail (update the existing function)
+function addDetail(detail: { key: string; value: string; component?: string; componentData?: any }) {
     editablePetInfo.push(detail);
+}
+
+// Add new function to handle activity data updates
+function handleActivityUpdate(key: string, newData: any) {
+    const infoIndex = editablePetInfo.findIndex(info => info.key === key);
+    if (infoIndex !== -1) {
+        editablePetInfo[infoIndex].componentData = newData;
+    }
 }
 
 function goToDashboard() {
@@ -155,24 +194,45 @@ function goToDashboard() {
         <!-- Additional Information -->
         <div class="mt-4 p-4 bg-gray-50 rounded-lg">
             <h2 class="text-xl font-semibold text-gray-700">Additional Information</h2>
-            <span v-if="petInfo.length==0 && !isEditing" class="text text-gray-500">Edit pet's profile to add more information.</span>
+            <span v-if="petInfo.length==0 && !isEditing" class="text text-gray-500">
+                Edit pet's profile to add more information.
+            </span>
 
             <!-- Display Mode -->
-            <ul v-if="!isEditing">
-                <li v-for="(info, index) in editablePetInfo" :key="index" class="text-gray-600">
-                    {{ info.key }}: {{ info.value }}
-                </li>
-            </ul>
+            <div v-if="!isEditing">
+                <div v-for="(info, index) in editablePetInfo" :key="index">
+                    <!-- Render ActivityDetails component if it exists -->
+                    <ActivityDetails
+                        v-if="info.key === 'activity'"
+                        :is-editing="false"
+                        :activity-data="info.componentData"
+                    />
+                    <!-- Render regular info if no component -->
+                    <div v-else class="text-gray-600">
+                        {{ info.key }}: {{ info.value }}
+                    </div>
+                </div>
+            </div>
 
             <!-- Editable Mode -->
             <div v-else>
-                <ul>
-                    <li v-for="(info, index) in editablePetInfo" :key="index" class="flex space-x-2 mb-2">
+                <div v-for="(info, index) in editablePetInfo" :key="index">
+                    <!-- Render ActivityDetails component in edit mode -->
+                    <ActivityDetails
+                        v-if="info.key === 'activity'"
+                        :is-editing="true"
+                        :activity-data="info.componentData"
+                        @update:activity-data="(data) => handleActivityUpdate('activity', data)"
+                    />
+                    <!-- Render regular edit inputs if no component -->
+                    <div v-else class="flex space-x-2 mb-2">
                         <input v-model="info.key" class="border rounded w-1/3" placeholder="Info Key" />
                         <input v-model="info.value" class="border rounded w-2/3" placeholder="Info Value" />
-                    </li>
-                </ul>
-                <Button class="bg-gray-400 text-white rounded" @click="openDetailsDrawer" >Add Pet Details</Button>
+                    </div>
+                </div>
+                <Button class="bg-gray-400 text-white rounded" @click="openDetailsDrawer">
+                    Add Pet Details
+                </Button>
             </div>
         </div>
 
@@ -188,6 +248,7 @@ function goToDashboard() {
             @close="closeDetailsDrawer"
         />
     </div>
+    <Chatbot/>
 </template>
 
 

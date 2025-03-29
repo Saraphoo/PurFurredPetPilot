@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\PetController;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Http\Request;
+use App\Http\Controllers\GoogleCalendarController;
 
 
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     ['role' => 'system', 'content' => 'You are a helpful pet care assistant, knowledgeable about pets and their needs.'],
                     ['role' => 'user', 'content' => $request->input('message')]
                 ],
+                'max_tokens' => 15,
             ]);
 
             return response()->json([
@@ -40,6 +42,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ], 500);
         }
     })->name('chat.message');
+
+    // Google Calendar Routes
+    Route::get('/calendar/connect', [GoogleCalendarController::class, 'connect'])->name('calendar.connect');
+    Route::get('/calendar/callback', [GoogleCalendarController::class, 'callback'])->name('calendar.callback');
+    Route::get('/calendar/events', [GoogleCalendarController::class, 'listEvents'])->name('calendar.events');
+    Route::post('/calendar/events', [GoogleCalendarController::class, 'createEvent'])->name('calendar.store');
+
+    Route::get('/calendar', function () {
+        return Inertia::render('Calendar');
+    })->name('calendar.index');
 });
 
 //Route::get('/', function(){
