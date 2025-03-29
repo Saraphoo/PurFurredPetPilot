@@ -1,55 +1,144 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Button } from "@/components/ui/button";
+import axios from 'axios'; // Make sure axios is installed
 
-// Reactive state for user message and response message
+// Reactive state for chat messages, loading state, and drawer state
 const userMessage = ref('');
-const responseMessage = ref('');
+const messages = ref<Array<{ role: 'user' | 'assistant', content: string }>>([]);
+const isLoading = ref(false);
+const isDrawerOpen = ref(false);
 
 // Function to send a message to the OpenAI API endpoint
 const sendMessage = async () => {
+    if (!userMessage.value.trim()) return;
+    
     try {
-        const response = await fetch('/dashboard/test-openai', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: userMessage.value }),
+        isLoading.value = true;
+        // Add user message to chat
+        messages.value.push({
+            role: 'user',
+            content: userMessage.value
         });
-        const data = await response.json();
-        responseMessage.value = data.message;
+
+        // Using axios instead of fetch
+        const response = await axios.post('/chat', {
+            message: userMessage.value
+        });
+
+        const data = response.data;
+
+        if (data.status === 'success') {
+            messages.value.push({
+                role: 'assistant',
+                content: data.message
+            });
+        } else {
+            throw new Error(data.message);
+        }
     } catch (error) {
         console.error('Error fetching OpenAI response:', error);
+        messages.value.push({
+            role: 'assistant',
+            content: 'Sorry, I encountered an error processing your request.'
+        });
+    } finally {
+        userMessage.value = '';
+        isLoading.value = false;
     }
 };
-
 </script>
 
 <template>
-    <div class="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md space-y-4">
-        <h2 class="text-2xl font-semibold text-gray-800">Chat with AI</h2>
+    <!-- Floating Action Button -->
+    <button 
+        @click="isDrawerOpen = true"
+        class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 flex items-center justify-center z-[100]"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z" />
+        </svg>
+    </button>
 
-        <!-- Textarea for user message input -->
-        <textarea
-            v-model="userMessage"
-            class="border rounded w-full p-2"
-            rows="4"
-            placeholder="Type your message here..."
-        ></textarea>
+    <!-- Drawer Overlay -->
+    <div v-if="isDrawerOpen" 
+         class="fixed inset-0 bg-black bg-opacity-50 z-[101]"
+         @click="isDrawerOpen = false">
+    </div>
 
-        <!-- Send button -->
-        <Button class="bg-gray-400 text-white rounded w-full" @click="sendMessage">Send</Button>
+    <!-- Chat Drawer -->
+    <div 
+        :class="[
+            'fixed top-0 right-0 h-full w-[400px] bg-white shadow-lg transform transition-transform duration-300 z-[102]',
+            isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+        ]"
+    >
+        <div class="p-6 h-full flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">Pet Care Assistant</h2>
+                <button 
+                    @click="isDrawerOpen = false"
+                    class="p-2 rounded-full hover:bg-gray-100"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-        <!-- Response section -->
-        <div v-if="responseMessage" class="mt-4">
-            <h4 class="text-xl font-medium text-gray-700">Response from AI:</h4>
-            <p class="text-gray-600 mt-2">{{ responseMessage }}</p>
+            <!-- Chat Messages -->
+            <div class="flex-grow overflow-y-auto mb-4">
+                <div v-for="(message, index) in messages" :key="index" class="mb-4">
+                    <div :class="[
+                        'p-3 rounded-lg max-w-[85%]',
+                        message.role === 'user' 
+                            ? 'bg-blue-500 text-white ml-auto' 
+                            : 'bg-gray-100 text-gray-800'
+                    ]">
+                        {{ message.content }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="mt-auto">
+                <textarea
+                    v-model="userMessage"
+                    class="w-full p-3 border rounded-lg resize-none"
+                    rows="3"
+                    placeholder="Ask about pet care..."
+                    @keyup.enter.exact.prevent="sendMessage"
+                ></textarea>
+
+                <Button 
+                    class="w-full mt-2" 
+                    :disabled="isLoading || !userMessage.trim()"
+                    @click="sendMessage"
+                >
+                    {{ isLoading ? 'Sending...' : 'Send Message' }}
+                </Button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-textarea {
-    margin-bottom: 1rem;
+.overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
 }
 </style>

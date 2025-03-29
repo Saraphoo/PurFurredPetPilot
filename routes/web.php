@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PetController;
 use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
@@ -17,6 +18,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pets/show', function () {
         return Inertia::render('pets/Show');
     })->name('pets.show');
+
+    Route::post('/chat', function (Request $request) {
+        try {
+            $response = OpenAI::chat()->create([
+                'model' => 'gpt-4o-mini',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a helpful pet care assistant, knowledgeable about pets and their needs.'],
+                    ['role' => 'user', 'content' => $request->input('message')]
+                ],
+            ]);
+
+            return response()->json([
+                'message' => $response->choices[0]->message->content,
+                'status' => 'success'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing your request',
+                'status' => 'error'
+            ], 500);
+        }
+    })->name('chat.message');
 });
 
 //Route::get('/', function(){
