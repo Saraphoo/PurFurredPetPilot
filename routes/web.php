@@ -19,53 +19,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('pets.show');
 });
 
-Route::get('/', function(){
-    $chat = new \App\AI\Chat();
-    $response= $chat
-        ->systemMessage('You are acting as an expert assistant')
-        ->send('message to the chatbot here');
-    return view('chatbot', ['response' => $response]);
-});
+//Route::get('/', function(){
+//    $chat = new \App\AI\Chat();
+//    $response= $chat
+//        ->systemMessage('You are acting as an expert assistant')
+//        ->send('message to the chatbot here');
+//    return view('chatbot', ['response' => $response]);
+//});
+//
+//
+//Route::get('/', function() {
+////    dd(new \App\AI\PetPilotAssistant(config('services.openai.assistant')));
+//    $assistant = new \App\AI\PetPilotAssistant(config('services.openai.assistant'));
+//
+//    $assistant->acceptFile(storage_path('docs/file.md'));
+//
+//    $run = OpenAI::threads()->createAndRun([
+//        'assistant_id' => $assistant->getId(),
+//        'thread'=>[
+//            'messages'=>[
+//                ['role'=>'user', 'content'=>'message to the chatbot here']
+//            ],
+//            ]
+//        ]);
+//    do {
+//        sleep(1);
+//        $run = OpenAI::threads()->runs()->retrieve(
+//            threadId: $run->threadId,
+//            runId: $run->id
+//        );
+//    }while($run->status !== 'completed');
+//
+//    OpenAI::threads()->messages()->list($run->threadId);
+//   });
 
 
-Route::get('/', function() {
-//    dd(new \App\AI\PetPilotAssistant(config('services.openai.assistant')));
-    $assistant = new \App\AI\PetPilotAssistant(config('services.openai.assistant'));
-
-    $assistant->acceptFile(storage_path('docs/file.md'));
-
-    $run = OpenAI::threads()->createAndRun([
-        'assistant_id' => $assistant->getId(),
-        'thread'=>[
-            'messages'=>[
-                ['role'=>'user', 'content'=>'message to the chatbot here']
-            ],
-            ]
-        ]);
-    do {
-        sleep(1);
-        $run = OpenAI::threads()->runs()->retrieve(
-            threadId: $run->threadId,
-            runId: $run->id
-        );
-    }while($run->status !== 'completed');
-
-    OpenAI::threads()->messages()->list($run->threadId);
-   });
-
-
-Route::post('/dashboard/test-openai', function (Request $request) {
-    $userMessage = $request->input('message');
-
-    // OpenAI request with user's message
-    $response = OpenAI::completions()->create([
-        'model' => 'gpt-4o-mini',
-        'prompt' => $userMessage,
-        'max_tokens' => 10, // Adjust based on desired response length
-    ]);
-
-    return response()->json(['message' => $response->choices[0]->text]);
-});
+//Route::post('/dashboard/test-openai', function (Request $request) {
+//    $userMessage = $request->input('message');
+//
+//    // OpenAI request with user's message
+//    $response = OpenAI::completions()->create([
+//        'model' => 'gpt-4o-mini',
+//        'prompt' => $userMessage,
+//        'max_tokens' => 10, // Adjust based on desired response length
+//    ]);
+//
+//    return response()->json(['message' => $response->choices[0]->text]);
+//});
 
 Route::get('/users/{user}', function (User $user) {
     return $user->email;
