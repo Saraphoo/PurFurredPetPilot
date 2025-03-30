@@ -2,20 +2,60 @@
     <div class="calendar-container p-6">
         <div class="mb-6 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">Pet Calendar</h1>
-            <button 
-                @click="connectToGoogle" 
+            <button
+                @click="connectToGoogle"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
                 Connect Google Calendar
             </button>
         </div>
 
+
+  <div>
+    <v-sheet
+      class="d-flex"
+      height="54"
+      tile
+    >
+      <v-select
+        v-model="type"
+        :items="types"
+        class="ma-2"
+        density="compact"
+        label="View Mode"
+        variant="outlined"
+        hide-details
+      ></v-select>
+      <v-select
+        v-model="weekday"
+        :items="weekdays"
+        class="ma-2"
+        density="compact"
+        label="weekdays"
+        variant="outlined"
+        hide-details
+      ></v-select>
+    </v-sheet>
+    <v-sheet>
+      <v-calendar
+        ref="calendar"
+        v-model="value"
+        :events="events"
+        :view-mode="type"
+        :weekdays="weekday"
+      ></v-calendar>
+    </v-sheet>
+  </div>
+
+
+
+
         <div class="bg-white rounded-lg shadow p-6">
             <!-- Calendar Navigation -->
             <div class="flex justify-between items-center mb-4">
                 <div class="flex space-x-4">
-                    <button 
-                        @click="previousMonth" 
+                    <button
+                        @click="previousMonth"
                         class="p-2 hover:bg-gray-100 rounded"
                     >
                         &lt; Previous
@@ -23,8 +63,8 @@
                     <h2 class="text-xl font-semibold">
                         {{ currentMonthName }} {{ currentYear }}
                     </h2>
-                    <button 
-                        @click="nextMonth" 
+                    <button
+                        @click="nextMonth"
                         class="p-2 hover:bg-gray-100 rounded"
                     >
                         Next &gt;
@@ -35,18 +75,18 @@
             <!-- Calendar Grid -->
             <div class="grid grid-cols-7 gap-2">
                 <!-- Days of Week -->
-                <div 
-                    v-for="day in daysOfWeek" 
-                    :key="day" 
+                <div
+                    v-for="day in daysOfWeek"
+                    :key="day"
                     class="text-center font-semibold p-2 text-gray-600"
                 >
                     {{ day }}
                 </div>
 
                 <!-- Calendar Days -->
-                <div 
-                    v-for="date in calendarDays" 
-                    :key="date.day" 
+                <div
+                    v-for="date in calendarDays"
+                    :key="date.day"
                     :class="[
                         'p-2 min-h-[80px] border border-gray-200',
                         date.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
@@ -60,9 +100,9 @@
                     </div>
                     <!-- Events will go here -->
                     <div class="mt-1">
-                        <div 
-                            v-for="event in getEventsForDate(date)" 
-                            :key="event.id" 
+                        <div
+                            v-for="event in getEventsForDate(date)"
+                            :key="event.id"
                             class="text-xs p-1 mb-1 rounded bg-blue-100 text-blue-800"
                         >
                             {{ event.title }}
@@ -74,7 +114,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -94,12 +134,12 @@ const currentYear = computed(() => {
 const calendarDays = computed(() => {
     const year = currentDate.value.getFullYear();
     const month = currentDate.value.getMonth();
-    
+
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
-    
+
     const days = [];
-    
+
     // Add days from previous month
     const firstDayOfWeek = firstDayOfMonth.getDay();
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
@@ -111,7 +151,7 @@ const calendarDays = computed(() => {
             date: date
         });
     }
-    
+
     // Add days of current month
     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
         const date = new Date(year, month, i);
@@ -122,7 +162,7 @@ const calendarDays = computed(() => {
             date: date
         });
     }
-    
+
     // Add days from next month
     const remainingDays = 42 - days.length; // 6 rows * 7 days = 42
     for (let i = 1; i <= remainingDays; i++) {
@@ -134,7 +174,7 @@ const calendarDays = computed(() => {
             date: date
         });
     }
-    
+
     return days;
 });
 
@@ -182,6 +222,17 @@ async function fetchEvents() {
     }
 }
 
+// Add these new refs for calendar view
+const type = ref('month')
+const types = ['month', 'week', 'day']
+const weekday = ref([0, 1, 2, 3, 4, 5, 6])
+const weekdays = [
+  { value: [0, 1, 2, 3, 4, 5, 6], text: 'All' },
+  { value: [1, 2, 3, 4, 5], text: 'Weekdays' },
+  { value: [6, 0], text: 'Weekend' },
+]
+const value = ref('')
+
 onMounted(() => {
     fetchEvents();
 });
@@ -192,4 +243,4 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
 }
-</style> 
+</style>
