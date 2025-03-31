@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('daily_behaviors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('behavior_id')->constrained('behaviours')->onDelete('cascade');
+            $table->foreignId('behavior_id')->constrained('behaviors')->onDelete('cascade');
             $table->dateTime('occurred_at');
             $table->string('notes')->nullable();
         });

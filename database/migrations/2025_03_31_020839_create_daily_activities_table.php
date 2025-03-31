@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('duration_value');
             $table->string('duration_unit');
             $table->integer('intensity');
-            $table->dateTime('occured_at');
+            $table->dateTime('occurred_at');
             $table->boolean('regular_activity')->default(false);
             $table->string('notes')->nullable();
         });

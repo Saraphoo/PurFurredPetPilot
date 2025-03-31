@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('meal_type');
             $table->string('name')->nullable();
             $table->string('portion_size');
-            $table->timestamps('feed_time');
+            $table->time('feed_time');
         });
     }
 
