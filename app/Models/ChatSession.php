@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\OpenAIService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class ChatSession extends Model
 {
@@ -29,11 +30,21 @@ class ChatSession extends Model
         $openAIService = app(OpenAIService::class);
         $embedding = $openAIService->getEmbedding($query);
         
-        return self::select('message', 'response')
-            ->orderByRaw('embedding <=> ?', [$embedding])
-            ->limit($limit)
-            ->get()
-            ->toArray();
+        $results = DB::select(
+            "SELECT message, response 
+             FROM chat_sessions 
+             ORDER BY embedding <=> ?::vector 
+             LIMIT ?",
+            [json_encode($embedding), $limit]
+        );
+
+        // Convert stdClass objects to arrays
+        return array_map(function ($result) {
+            return [
+                'message' => $result->message,
+                'response' => $result->response
+            ];
+        }, $results);
     }
 
     public static function createWithEmbedding(array $attributes): self

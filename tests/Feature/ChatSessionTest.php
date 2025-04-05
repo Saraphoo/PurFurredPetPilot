@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\ChatSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ChatSessionTest extends TestCase
@@ -14,10 +15,14 @@ class ChatSessionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        
+        // Ensure the testing database exists and has the vector extension
+        require_once __DIR__ . '/../setup-test-database.php';
+        
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_store_a_chat_session_with_embedding()
     {
         $chatSession = ChatSession::createWithEmbedding([
@@ -36,7 +41,7 @@ class ChatSessionTest extends TestCase
         $this->assertCount(1536, $chatSession->embedding);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_find_similar_chat_sessions()
     {
         // Create some test chat sessions
@@ -72,7 +77,7 @@ class ChatSessionTest extends TestCase
         $this->assertArrayHasKey('response', $similarSessions[0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_no_similar_sessions_exist()
     {
         $query = 'What is the best way to care for a cat?';
@@ -82,7 +87,7 @@ class ChatSessionTest extends TestCase
         $this->assertEmpty($similarSessions);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_returns_sessions_for_the_specified_limit()
     {
         // Create multiple test sessions
