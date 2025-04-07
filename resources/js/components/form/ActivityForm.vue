@@ -72,6 +72,18 @@
       </v-card-text>
     </v-card>
 
+      <!-- Daily Activity Log Section -->
+      <v-card class="mb-6">
+          <v-card-title class="text-h6">Daily Activity Log</v-card-title>
+          <v-card-text>
+              <!-- This will be replaced with the DailyActivityLog component -->
+              <div class="text-center py-4">
+                  <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
+                  <p class="text-grey mt-2">Daily Activity Log Component will be added here</p>
+              </div>
+          </v-card-text>
+      </v-card>
+
     <!-- General Notes Section -->
     <v-card>
       <v-card-title class="text-h6">General Notes</v-card-title>
@@ -87,84 +99,142 @@
   </v-form>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+import { useForm } from '@inertiajs/inertia-vue3';
+import axios from 'axios';
+
+const props = defineProps({
+    petId: {
+        type: Number,
+        required: true
+    }
+});
 
 const valid = ref(false);
 const form = ref(null);
 
 // Form data
 const activities = ref([{
-  name: '',
-  duration_value: '',
-  duration_unit: '',
-  frequency_value: '',
-  frequency_unit: ''
+    name: '',
+    duration_value: '',
+    duration_unit: '',
+    frequency_value: '',
+    frequency_unit: ''
 }]);
 
 const generalNotes = ref('');
 
 // Options
 const activityOptions = [
-  'Walking',
-  'Playing',
-  'Training',
-  'Grooming',
-  'Feeding',
-  'Socializing',
-  'Exercise',
-  'Resting'
+    'Walking',
+    'Playing',
+    'Training',
+    'Grooming',
+    'Feeding',
+    'Socializing',
+    'Exercise',
+    'Resting'
 ];
 
 const durationUnits = [
-  'minutes',
-  'hours',
-  'days'
+    'minutes',
+    'hours',
+    'days'
 ];
 
 const frequencyUnits = [
-  'hour',
-  'day',
-  'week',
-  'month',
-  'year'
+    'hour',
+    'day',
+    'week',
+    'month',
+    'year'
 ];
 
 // Methods
 const addActivity = () => {
-  activities.value.push({
-    name: '',
-    duration_value: '',
-    duration_unit: '',
-    frequency_value: '',
-    frequency_unit: ''
-  });
+    activities.value.push({
+        name: '',
+        duration_value: '',
+        duration_unit: '',
+        frequency_value: '',
+        frequency_unit: ''
+    });
 };
 
 const removeActivity = (index) => {
-  activities.value.splice(index, 1);
+    activities.value.splice(index, 1);
 };
 
 const validate = async () => {
-  const { valid } = await form.value.validate();
-  return valid;
+    const { valid } = await form.value.validate();
+    return valid;
 };
 
 const reset = () => {
-  form.value.reset();
-  activities.value = [{
-    name: '',
-    duration_value: '',
-    duration_unit: '',
-    frequency_value: '',
-    frequency_unit: ''
-  }];
+    form.value.reset();
+    activities.value = [{
+        name: '',
+        duration_value: '',
+        duration_unit: '',
+        frequency_value: '',
+        frequency_unit: ''
+    }];
 };
+
+// Load saved activities
+const loadActivities = async () => {
+    try {
+        console.log('Loading activities for pet:', props.petId);
+        const response = await axios.get(`/pets/${props.petId}/activities`);
+        console.log('Received activities:', response.data);
+
+        if (response.data && response.data.length > 0) {
+            activities.value = response.data.map(activity => ({
+                name: activity.activity,
+                duration_value: activity.duration_value?.toString() || '',
+                duration_unit: activity.duration_unit || '',
+                frequency_value: activity.frequency_value?.toString() || '',
+                frequency_unit: activity.frequency_unit || ''
+            }));
+            console.log('Mapped activities:', activities.value);
+        } else {
+            console.log('No activities found');
+        }
+    } catch (error) {
+        console.error('Error loading activities:', error);
+    }
+};
+
+// Autosave functionality
+const autosave = async () => {
+    if (!await validate()) return;
+
+    try {
+        console.log('Saving activities:', activities.value);
+        const response = await axios.post(`/pets/${props.petId}/activities`, {
+            activities: activities.value
+        });
+        console.log('Save response:', response.data);
+    } catch (error) {
+        console.error('Error saving activities:', error);
+    }
+};
+
+// Watch for changes and trigger autosave
+watch(activities, () => {
+    autosave();
+}, { deep: true });
+
+// Load activities when component is mounted
+onMounted(() => {
+    loadActivities();
+});
 
 // Expose methods to parent component
 defineExpose({
-  validate,
-  reset,
-  activities
+    validate,
+    reset,
+    activities
 });
-</script> 
+</script>

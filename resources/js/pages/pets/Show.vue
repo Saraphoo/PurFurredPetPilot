@@ -153,6 +153,7 @@ const currentForm = computed(() => {
         <component
             :is="currentForm"
             ref="currentFormRef"
+            :pet-id="pet.id"
         />
 
     </div>

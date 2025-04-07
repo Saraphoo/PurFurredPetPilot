@@ -55,7 +55,7 @@
   </v-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const valid = ref(false);
@@ -110,4 +110,4 @@ defineExpose({
   selectedBehaviors,
   behaviorNotes
 });
-</script> 
+</script>

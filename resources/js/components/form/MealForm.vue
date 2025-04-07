@@ -81,6 +81,18 @@
       </v-card-text>
     </v-card>
 
+      <!-- Daily Meal Log Section -->
+      <v-card class="mb-6">
+          <v-card-title class="text-h6">Daily Meal Log</v-card-title>
+          <v-card-text>
+              <!-- This will be replaced with the DailyMealLog component -->
+              <div class="text-center py-4">
+                  <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
+                  <p class="text-grey mt-2">Daily Meal Log Component will be added here</p>
+              </div>
+          </v-card-text>
+      </v-card>
+
     <!-- General Notes Section -->
     <v-card>
       <v-card-title class="text-h6">General Notes</v-card-title>
@@ -96,7 +108,7 @@
   </v-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const valid = ref(false);
@@ -196,4 +208,4 @@ defineExpose({
   reset,
   meals
 });
-</script> 
+</script>

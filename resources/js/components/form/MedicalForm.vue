@@ -102,6 +102,18 @@
       </v-card-text>
     </v-card>
 
+      <!-- Daily Medication Log Section -->
+      <v-card class="mb-6">
+          <v-card-title class="text-h6">Daily Medication Log</v-card-title>
+          <v-card-text>
+              <!-- This will be replaced with the DailyMedicaitonLog component -->
+              <div class="text-center py-4">
+                  <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
+                  <p class="text-grey mt-2">Daily Behavior Log Component will be added here</p>
+              </div>
+          </v-card-text>
+      </v-card>
+
     <!-- General Notes Section -->
     <v-card>
       <v-card-title class="text-h6">General Notes</v-card-title>
@@ -117,7 +129,7 @@
   </v-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const valid = ref(false);
@@ -223,4 +235,4 @@ defineExpose({
   specialNeeds,
   medications
 });
-</script> 
+</script>
