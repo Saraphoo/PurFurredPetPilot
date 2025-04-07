@@ -19,11 +19,6 @@ const mainNavItems: NavItem[] = [
         href: '/pets/create',
         icon: PawPrintIcon,
     },
-    {
-        title: 'Calendar',
-        href: '/calendar',
-        icon: CalendarDays,
-    },
 ];
 
 const footerNavItems: NavItem[] = [

@@ -5,6 +5,11 @@ import {router} from "@inertiajs/vue3";
 import AddDetailsDrawer from '@/components/petProfile/addDetailsDrawer.vue';
 import Chatbot from '@/components/chatbot/Chatbot.vue';
 import ActivityDetails from '@/components/petProfile/details/ActivityDetails.vue';
+import ActivityForm from '@/components/form/ActivityForm.vue';
+import MealForm from '@/components/form/MealForm.vue';
+import MedicalForm from '@/components/form/MedicalForm.vue';
+import HousingForm from '@/components/form/HousingForm.vue';
+import BehaviorForm from '@/components/form/BehaviorForm.vue';
 
 // Add a type for the pet info items
 interface PetInfoItem {
@@ -116,6 +121,27 @@ const drawerButtons = computed(() => {
     return possibleDetails.value.filter(detail => !(detail.key in props.petInfo));
 });
 
+// Add new ref for form selection
+const selectedForm = ref('activity');
+
+// Add new computed property for form component
+const currentForm = computed(() => {
+  switch (selectedForm.value) {
+    case 'activity':
+      return ActivityForm;
+    case 'meal':
+      return MealForm;
+    case 'medical':
+      return MedicalForm;
+    case 'housing':
+      return HousingForm;
+    case 'behavior':
+      return BehaviorForm;
+    default:
+      return ActivityForm;
+  }
+});
+
 function toggleEdit() {
     isEditing.value = !isEditing.value;
 }
@@ -190,6 +216,34 @@ function goToDashboard() {
             </div>
         </div>
 
+        <!-- Form Selection Toggle -->
+        <v-btn-toggle
+            v-model="selectedForm"
+            mandatory
+            class="mb-4"
+        >
+            <v-btn value="activity">
+                Activities
+            </v-btn>
+            <v-btn value="meal">
+                Meals
+            </v-btn>
+            <v-btn value="medical">
+                Medical
+            </v-btn>
+            <v-btn value="housing">
+                Housing
+            </v-btn>
+            <v-btn value="behavior">
+                Behavior
+            </v-btn>
+        </v-btn-toggle>
+
+        <!-- Dynamic Form Component -->
+        <component
+            :is="currentForm"
+            ref="currentFormRef"
+        />
 
         <!-- Additional Information -->
         <div class="mt-4 p-4 bg-gray-50 rounded-lg">
@@ -251,8 +305,16 @@ function goToDashboard() {
     <Chatbot/>
 </template>
 
-
-
 <style scoped>
+.v-btn-toggle {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 
+.v-btn-toggle .v-btn {
+    flex: 1;
+    min-width: 120px;
+}
 </style>

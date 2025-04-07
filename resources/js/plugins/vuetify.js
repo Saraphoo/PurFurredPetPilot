@@ -4,7 +4,11 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import * as labs from 'vuetify/labs/components';
 
-export default createVuetify({
+export const vuetify = createVuetify({
+    theme: {
+        defaultTheme: 'light',
+        //
+    },
     components: {
         ...components,
         ...labs,

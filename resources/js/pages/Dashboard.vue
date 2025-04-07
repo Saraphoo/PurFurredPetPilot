@@ -4,6 +4,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PetProfileCard from "@/components/dashboard/PetProfileCard.vue";
 import Chatbot from "@/components/chatbot/Chatbot.vue";
+import Calendar from "@/components/Calendar.vue";
 
 
 
@@ -40,6 +41,7 @@ defineProps<{
             <div class="grid auto-rows-min gap-4 md:grid-cols-3" v-else>
                 <div>No pets to display</div>
             </div>
+            <Calendar/>
         </div>
         <Chatbot/>
     </AppLayout>
