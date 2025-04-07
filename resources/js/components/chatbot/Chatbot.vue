@@ -12,7 +12,7 @@ const isDrawerOpen = ref(false);
 // Function to send a message to the OpenAI API endpoint
 const sendMessage = async () => {
     if (!userMessage.value.trim()) return;
-    
+
     try {
         isLoading.value = true;
         // Add user message to chat
@@ -51,7 +51,7 @@ const sendMessage = async () => {
 
 <template>
     <!-- Floating Action Button -->
-    <button 
+    <button
         @click="isDrawerOpen = true"
         class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 flex items-center justify-center z-[100]"
     >
@@ -61,13 +61,13 @@ const sendMessage = async () => {
     </button>
 
     <!-- Drawer Overlay -->
-    <div v-if="isDrawerOpen" 
-         class="fixed inset-0 bg-black bg-opacity-50 z-[101]"
+    <div v-if="isDrawerOpen"
+         class="fixed top-0 bg-black bg-opacity-50 z-[101]"
          @click="isDrawerOpen = false">
     </div>
 
     <!-- Chat Drawer -->
-    <div 
+    <div
         :class="[
             'fixed top-0 right-0 h-full w-[400px] bg-white shadow-lg transform transition-transform duration-300 z-[102]',
             isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
@@ -77,7 +77,7 @@ const sendMessage = async () => {
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-semibold text-gray-800">Pet Care Assistant</h2>
-                <button 
+                <button
                     @click="isDrawerOpen = false"
                     class="p-2 rounded-full hover:bg-gray-100"
                 >
@@ -92,8 +92,8 @@ const sendMessage = async () => {
                 <div v-for="(message, index) in messages" :key="index" class="mb-4">
                     <div :class="[
                         'p-3 rounded-lg max-w-[85%]',
-                        message.role === 'user' 
-                            ? 'bg-blue-500 text-white ml-auto' 
+                        message.role === 'user'
+                            ? 'bg-blue-500 text-white ml-auto'
                             : 'bg-gray-100 text-gray-800'
                     ]">
                         {{ message.content }}
@@ -111,8 +111,8 @@ const sendMessage = async () => {
                     @keyup.enter.exact.prevent="sendMessage"
                 ></textarea>
 
-                <Button 
-                    class="w-full mt-2" 
+                <Button
+                    class="w-full mt-2"
                     :disabled="isLoading || !userMessage.trim()"
                     @click="sendMessage"
                 >
