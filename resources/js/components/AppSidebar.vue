@@ -15,9 +15,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Pets',
+        title: 'Add Pet',
         href: '/pets/create',
         icon: PawPrintIcon,
+    },
+    {
+        title: 'Calendar',
+        href: '/calendar',
+        icon: CalendarDays,
     },
 ];
 
