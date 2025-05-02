@@ -130,21 +130,21 @@ const currentForm = computed(() => {
         <v-btn-toggle
             v-model="selectedForm"
             mandatory
-            class="mb-4"
+            class="mb-4 custom-toggle"
         >
-            <v-btn value="activity">
+            <v-btn value="activity" class="custom-btn">
                 Activities
             </v-btn>
-            <v-btn value="meal">
+            <v-btn value="meal" class="custom-btn">
                 Meals
             </v-btn>
-            <v-btn value="medical">
+            <v-btn value="medical" class="custom-btn">
                 Medical
             </v-btn>
-            <v-btn value="housing">
+            <v-btn value="housing" class="custom-btn">
                 Housing
             </v-btn>
-            <v-btn value="behavior">
+            <v-btn value="behavior" class="custom-btn">
                 Behavior
             </v-btn>
         </v-btn-toggle>
@@ -173,5 +173,26 @@ const currentForm = computed(() => {
 .v-btn-toggle .v-btn {
     flex: 1;
     min-width: 120px;
+}
+
+.custom-toggle :deep(.v-btn) {
+    background-color: #FFBF69 !important;
+    color: white !important;
+    transition: all 0.2s !important;
+}
+
+.custom-toggle :deep(.v-btn:hover) {
+    background-color: #FF9F1C !important;
+}
+
+.custom-toggle :deep(.v-btn--active) {
+    background-color: #2EC4B6 !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.custom-toggle :deep(.v-btn--active:hover) {
+    background-color: #2EC4B6 !important;
+    opacity: 0.9;
 }
 </style>

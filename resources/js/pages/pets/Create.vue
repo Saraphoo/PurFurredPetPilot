@@ -136,9 +136,36 @@ defineProps<{
                     <!-- Other fields (e.g., breed, color, etc.) go here -->
                 </div>
 
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md shadow">Create Pet</button>
+                <button type="submit" class="px-4 py-2 bg-[#2EC4B6] text-white rounded-md shadow hover:bg-[#CBF3F0] transition-colors">Create Pet</button>
             </form>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+input:focus, select:focus {
+    outline: none;
+    border-color: #FF9F1C;
+    box-shadow: 0 0 0 2px #FFBF69;
+}
+
+input, select {
+    border: 1px solid #2EC4B6;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    transition: all 0.2s;
+}
+
+input:hover, select:hover {
+    border-color: #CBF3F0;
+}
+
+button {
+    transition: all 0.2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+</style>
 
