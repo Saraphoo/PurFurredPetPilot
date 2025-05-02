@@ -116,7 +116,7 @@
         </v-row>
 
         <v-btn
-          color="primary"
+          color="#2EC4B6"
           @click="addAccessory"
           class="mt-2"
         >
@@ -292,3 +292,21 @@ defineExpose({
   accessories
 });
 </script>
+
+<style scoped>
+.v-btn {
+  text-transform: none !important;
+}
+
+:deep(.v-field--focused) {
+  color: #FF9F1C !important;
+}
+
+:deep(.v-field--focused .v-label) {
+  color: #FF9F1C !important;
+}
+
+:deep(.v-field--focused .v-field__outline) {
+  border-color: #FF9F1C !important;
+}
+</style>
