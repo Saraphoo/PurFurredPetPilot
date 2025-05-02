@@ -22,7 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/chat', function (Request $request) {
         try {
-            $response = OpenAI::chat()->create([
+            $client = \OpenAI::client(config('services.openai.secret'));
+            $response = $client->chat()->create([
                 'model' => 'gpt-4o-mini',
                 'messages' => [
                     ['role' => 'system', 'content' => 'You are a helpful pet care assistant, knowledgeable about pets and their needs.'],

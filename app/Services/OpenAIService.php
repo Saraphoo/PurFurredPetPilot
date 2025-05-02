@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use OpenAI\Client;
 
 class OpenAIService
 {
-    private string $apiKey;
+    private Client $client;
     private string $model;
 
     public function __construct()
     {
-        $this->apiKey = config('services.openai.api_key', 'test-key');
+        $this->client = \OpenAI::client(config('services.openai.secret'));
         $this->model = 'text-embedding-3-small'; // or text-embedding-3-large for better quality
     }
 
@@ -22,19 +22,12 @@ class OpenAIService
             return array_fill(0, 1536, 0.1);
         }
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->apiKey,
-            'Content-Type' => 'application/json',
-        ])->post('https://api.openai.com/v1/embeddings', [
+        $response = $this->client->embeddings()->create([
             'model' => $this->model,
             'input' => $text,
         ]);
 
-        if ($response->failed()) {
-            throw new \Exception('Failed to get embedding: ' . $response->body());
-        }
-
-        return $response->json()['data'][0]['embedding'];
+        return $response->embeddings[0]->embedding;
     }
 
     public function getModel(): string
