@@ -53,7 +53,7 @@ const sendMessage = async () => {
     <!-- Floating Action Button -->
     <button
         @click="isDrawerOpen = true"
-        class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 flex items-center justify-center z-[100]"
+        class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-[#FF9F1C] text-white shadow-lg hover:bg-[#FF9F1C]/90 flex items-center justify-center z-[100] transition-colors"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z" />
@@ -62,24 +62,24 @@ const sendMessage = async () => {
 
     <!-- Drawer Overlay -->
     <div v-if="isDrawerOpen"
-         class="fixed top-0 bg-black bg-opacity-50 z-[101]"
+         class="fixed inset-0 bg-black/50 z-[101]"
          @click="isDrawerOpen = false">
     </div>
 
     <!-- Chat Drawer -->
     <div
         :class="[
-            'fixed top-0 right-0 h-full w-[400px] bg-white shadow-lg transform transition-transform duration-300 z-[102]',
+            'fixed top-0 right-0 h-full w-[400px] bg-background shadow-lg transform transition-transform duration-300 z-[102]',
             isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
         ]"
     >
         <div class="p-6 h-full flex flex-col">
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Pet Care Assistant</h2>
+                <h2 class="text-2xl font-semibold text-foreground">Pet Care Assistant</h2>
                 <button
                     @click="isDrawerOpen = false"
-                    class="p-2 rounded-full hover:bg-gray-100"
+                    class="p-2 rounded-full hover:bg-[#2EC4B6]/10 transition-colors text-[#2EC4B6]"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -93,8 +93,8 @@ const sendMessage = async () => {
                     <div :class="[
                         'p-3 rounded-lg max-w-[85%]',
                         message.role === 'user'
-                            ? 'bg-blue-500 text-white ml-auto'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-[#FF9F1C] text-white ml-auto'
+                            : 'bg-muted text-muted-foreground'
                     ]">
                         {{ message.content }}
                     </div>
@@ -105,14 +105,14 @@ const sendMessage = async () => {
             <div class="mt-auto">
                 <textarea
                     v-model="userMessage"
-                    class="w-full p-3 border rounded-lg resize-none"
+                    class="w-full p-3 border border-input rounded-lg resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#FF9F1C] focus:border-[#FF9F1C]"
                     rows="3"
                     placeholder="Ask about pet care..."
                     @keyup.enter.exact.prevent="sendMessage"
                 ></textarea>
 
                 <Button
-                    class="w-full mt-2"
+                    class="w-full mt-2 bg-[#2EC4B6] text-white hover:bg-[#2EC4B6]/90"
                     :disabled="isLoading || !userMessage.trim()"
                     @click="sendMessage"
                 >
@@ -126,7 +126,7 @@ const sendMessage = async () => {
 <style scoped>
 .overflow-y-auto {
     scrollbar-width: thin;
-    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.5) transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
@@ -138,7 +138,7 @@ const sendMessage = async () => {
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-    background-color: rgba(156, 163, 175, 0.5);
+    background-color: hsl(var(--muted-foreground) / 0.5);
     border-radius: 3px;
 }
 </style>
