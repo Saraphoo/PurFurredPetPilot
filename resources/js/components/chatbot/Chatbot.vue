@@ -123,7 +123,7 @@ const sendMessage = async () => {
                     class="w-full p-3 border border-input rounded-lg resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#FF9F1C] focus:border-[#FF9F1C]"
                     rows="3"
                     placeholder="Ask about pet care..."
-                    @keyup.enter.exact.prevent="sendMessage"
+                    @keyup.enter.exact.prevent="sendMessage(); userMessage = ''"
                 ></textarea>
 
                 <Button
