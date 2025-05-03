@@ -96,6 +96,19 @@
         ></v-textarea>
       </v-card-text>
     </v-card>
+
+    <!-- Add save button at the bottom -->
+    <div class="mt-6 flex justify-end">
+      <v-btn
+        type="submit"
+        color="#2EC4B6"
+        :disabled="!valid"
+        class="px-6"
+        @click="submitForm"
+      >
+        Save Activity Information
+      </v-btn>
+    </div>
   </v-form>
 </template>
 
@@ -103,27 +116,36 @@
 import { ref, watch, onMounted } from 'vue';
 import { useForm } from '@inertiajs/inertia-vue3';
 import axios from 'axios';
+import type { VForm } from 'vuetify/components';
 
-const props = defineProps({
-    petId: {
-        type: Number,
-        required: true
-    }
-});
+interface Activity {
+    name: string;
+    duration_value: string;
+    duration_unit: string;
+    frequency_value: string;
+    frequency_unit: string;
+}
+
+const props = defineProps<{
+    petId: number;
+    initialData?: {
+        activities: Activity[];
+        notes: string;
+    };
+}>();
 
 const valid = ref(false);
-const form = ref(null);
+const form = ref<VForm | null>(null);
 
 // Form data
-const activities = ref([{
+const activities = ref<Activity[]>(props.initialData?.activities || [{
     name: '',
     duration_value: '',
     duration_unit: '',
     frequency_value: '',
     frequency_unit: ''
 }]);
-
-const generalNotes = ref('');
+const generalNotes = ref(props.initialData?.notes || '');
 
 // Options
 const activityOptions = [
@@ -162,16 +184,18 @@ const addActivity = () => {
     });
 };
 
-const removeActivity = (index) => {
+const removeActivity = (index: number) => {
     activities.value.splice(index, 1);
 };
 
 const validate = async () => {
+    if (!form.value) return false;
     const { valid } = await form.value.validate();
     return valid;
 };
 
 const reset = () => {
+    if (!form.value) return;
     form.value.reset();
     activities.value = [{
         name: '',
@@ -180,6 +204,28 @@ const reset = () => {
         frequency_value: '',
         frequency_unit: ''
     }];
+    generalNotes.value = '';
+};
+
+const submitForm = () => {
+    const formData = {
+        pet_id: props.petId,
+        activities: activities.value.map((activity: Activity) => ({
+            name: activity.name,
+            duration_value: activity.duration_value,
+            duration_unit: activity.duration_unit,
+            frequency_value: activity.frequency_value,
+            frequency_unit: activity.frequency_unit
+        })),
+        notes: generalNotes.value
+    };
+
+    useForm(formData).post(route('activities.store', { pet: props.petId }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            reset();
+        }
+    });
 };
 
 // Load saved activities
@@ -235,7 +281,8 @@ onMounted(() => {
 defineExpose({
     validate,
     reset,
-    activities
+    activities,
+    submitForm
 });
 </script>
 
