@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid">
+  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <!-- Special Needs Section -->
     <v-card class="mb-6">
       <v-card-title class="text-h6">Special Needs</v-card-title>
@@ -126,14 +126,32 @@
         ></v-textarea>
       </v-card-text>
     </v-card>
+
+    <!-- Add save button at the bottom -->
+    <div class="mt-6 flex justify-end">
+      <v-btn
+        type="submit"
+        color="#2EC4B6"
+        :disabled="!valid"
+        class="px-6"
+      >
+        Save Medical Information
+      </v-btn>
+    </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import type { VForm } from 'vuetify/components';
+
+const props = defineProps<{
+    petId: number;
+}>();
 
 const valid = ref(false);
-const form = ref(null);
+const form = ref<VForm | null>(null);
 
 // Form data
 const specialNeeds = ref([{
@@ -209,31 +227,50 @@ const removeMedication = (index) => {
   medications.value.splice(index, 1);
 };
 
+const submitForm = () => {
+    const formData = {
+        pet_id: props.petId,
+        special_needs: specialNeeds.value,
+        medications: medications.value,
+        notes: generalNotes.value
+    };
+
+    useForm(formData).post(route('medical.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            reset();
+        }
+    });
+};
+
 const validate = async () => {
-  const { valid } = await form.value.validate();
-  return valid;
+    if (!form.value) return false;
+    const { valid } = await form.value.validate();
+    return valid;
 };
 
 const reset = () => {
-  form.value.reset();
-  specialNeeds.value = [{
-    name: '',
-    affects: '',
-    notes: ''
-  }];
-  medications.value = [{
-    name: '',
-    prescribed_on: '',
-    notes: ''
-  }];
+    if (!form.value) return;
+    form.value.reset();
+    specialNeeds.value = [{
+        name: '',
+        affects: '',
+        notes: ''
+    }];
+    medications.value = [{
+        name: '',
+        prescribed_on: '',
+        notes: ''
+    }];
 };
 
 // Expose methods to parent component
 defineExpose({
-  validate,
-  reset,
-  specialNeeds,
-  medications
+    validate,
+    reset,
+    specialNeeds,
+    medications,
+    submitForm
 });
 </script>
 

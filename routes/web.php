@@ -7,6 +7,11 @@ use App\Http\Controllers\PetController;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GoogleCalendarController;
+use App\Http\Controllers\MealController;
+use App\Http\Controllers\HousingController;
+use App\Http\Controllers\MedicalController;
+use App\Http\Controllers\BehaviorController;
+use App\Http\Controllers\MedicationController;
 
 
 Route::get('/', function () {
@@ -52,6 +57,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/calendar', function () {
         return Inertia::render('Calendar');
     })->name('calendar.index');
+
+    // Meal routes
+    Route::post('/pets/{pet}/meals', [MealController::class, 'store'])->name('meals.store');
+    Route::put('/pets/{pet}/meals/{meal}', [MealController::class, 'update'])->name('meals.update');
+    Route::delete('/pets/{pet}/meals/{meal}', [MealController::class, 'destroy'])->name('meals.destroy');
+    Route::post('/pets/{pet}/meals/log', [MealController::class, 'logDailyMeal'])->name('meals.log');
+
+    // Housing routes
+    Route::post('/pets/{pet}/housing', [HousingController::class, 'store'])->name('housing.store');
+    Route::put('/pets/{pet}/housing/{housing}', [HousingController::class, 'update'])->name('housing.update');
+    Route::delete('/pets/{pet}/housing/{housing}', [HousingController::class, 'destroy'])->name('housing.destroy');
+
+    // Medical routes
+    Route::post('/pets/{pet}/medical', [MedicalController::class, 'store'])->name('medical.store');
+    Route::put('/pets/{pet}/medical', [MedicalController::class, 'update'])->name('medical.update');
+    Route::post('/pets/{pet}/medical/log', [MedicalController::class, 'logDailyMedication'])->name('medical.log');
+
+    // Behavior routes
+    Route::post('/pets/{pet}/behaviors', [BehaviorController::class, 'store'])->name('behaviors.store');
+    Route::put('/pets/{pet}/behaviors', [BehaviorController::class, 'update'])->name('behaviors.update');
+    Route::post('/pets/{pet}/behaviors/log', [BehaviorController::class, 'logDailyBehavior'])->name('behaviors.log');
+
+    // Medication routes
+    Route::post('/pets/{pet}/medications', [MedicationController::class, 'store'])->name('medications.store');
+    Route::put('/pets/{pet}/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
+    Route::delete('/pets/{pet}/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
 });
 
 //Route::get('/', function(){

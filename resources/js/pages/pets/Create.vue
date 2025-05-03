@@ -19,7 +19,6 @@ const form = useForm({
     sex: '',
 });
 
-
 // Dropdown options for pet types and species
 const petTypes = ref([
     { label: 'Dog', value: 'dog' },
@@ -72,9 +71,7 @@ const submit = () => {
 // Define component props
 defineProps<{
     errors: Record<string, string>;
-    flash: Record<string, string>;
 }>();
-
 </script>
 
 <template>

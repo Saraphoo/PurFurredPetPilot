@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid">
+  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <!-- Regular Meals Section -->
     <v-card class="mb-6">
       <v-card-title class="text-h6">Regular Meals</v-card-title>
@@ -105,14 +105,32 @@
         ></v-textarea>
       </v-card-text>
     </v-card>
+
+    <!-- Add save button at the bottom -->
+    <div class="mt-6 flex justify-end">
+      <v-btn
+        type="submit"
+        color="#2EC4B6"
+        :disabled="!valid"
+        class="px-6"
+      >
+        Save Meal Schedule
+      </v-btn>
+    </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import type { VForm } from 'vuetify/components';
+
+const props = defineProps<{
+    petId: number;
+}>();
 
 const valid = ref(false);
-const form = ref(null);
+const form = ref<VForm | null>(null);
 
 // Form data
 const meals = ref([{
@@ -181,16 +199,18 @@ const addMeal = () => {
   });
 };
 
-const removeMeal = (index) => {
+const removeMeal = (index: number) => {
   meals.value.splice(index, 1);
 };
 
 const validate = async () => {
+  if (!form.value) return false;
   const { valid } = await form.value.validate();
   return valid;
 };
 
 const reset = () => {
+  if (!form.value) return;
   form.value.reset();
   meals.value = [{
     feed_time: '',
@@ -202,11 +222,28 @@ const reset = () => {
   }];
 };
 
+const submitForm = () => {
+    const formData = {
+        pet_id: props.petId,
+        meals: meals.value,
+        notes: generalNotes.value
+    };
+
+    useForm(formData).post(route('meals.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Reset form after successful submission
+            reset();
+        }
+    });
+};
+
 // Expose methods to parent component
 defineExpose({
   validate,
   reset,
-  meals
+  meals,
+  submitForm
 });
 </script>
 

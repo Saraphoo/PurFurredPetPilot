@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid">
+  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <!-- Daily Living Space Section -->
     <v-card class="mb-6">
       <v-card-title class="text-h6">Daily Living Space</v-card-title>
@@ -137,14 +137,32 @@
         ></v-textarea>
       </v-card-text>
     </v-card>
+
+    <!-- Add save button at the bottom -->
+    <div class="mt-6 flex justify-end">
+      <v-btn
+        type="submit"
+        color="#2EC4B6"
+        :disabled="!valid"
+        class="px-6"
+      >
+        Save Housing Information
+      </v-btn>
+    </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import type { VForm } from 'vuetify/components';
+
+const props = defineProps<{
+    petId: number;
+}>();
 
 const valid = ref(false);
-const form = ref(null);
+const form = ref<VForm | null>(null);
 
 // Form data
 const totalSpaceValue = ref('');
@@ -254,16 +272,18 @@ const addAccessory = () => {
   });
 };
 
-const removeAccessory = (index) => {
+const removeAccessory = (index: number) => {
   accessories.value.splice(index, 1);
 };
 
 const validate = async () => {
+  if (!form.value) return false;
   const { valid } = await form.value.validate();
   return valid;
 };
 
 const reset = () => {
+  if (!form.value) return;
   form.value.reset();
   totalSpaceValue.value = '';
   totalSpaceUnit.value = '';
@@ -280,6 +300,26 @@ const reset = () => {
   }];
 };
 
+const submitForm = () => {
+    const formData = {
+        pet_id: props.petId,
+        total_space_value: totalSpaceValue.value,
+        total_space_unit: totalSpaceUnit.value,
+        housing_type: housingType.value,
+        flooring_type: flooringType.value,
+        bedding_type: beddingType.value,
+        accessories: accessories.value,
+        notes: generalNotes.value
+    };
+
+    useForm(formData).post(route('housing.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            reset();
+        }
+    });
+};
+
 // Expose methods to parent component
 defineExpose({
   validate,
@@ -289,7 +329,8 @@ defineExpose({
   housingType,
   flooringType,
   beddingType,
-  accessories
+  accessories,
+  submitForm
 });
 </script>
 

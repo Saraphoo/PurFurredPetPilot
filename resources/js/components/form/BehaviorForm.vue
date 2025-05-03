@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid">
+  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <!-- Regular Behaviors Section -->
     <v-card class="mb-6">
       <v-card-title class="text-h6">Regular Behaviors</v-card-title>
@@ -52,14 +52,32 @@
         ></v-textarea>
       </v-card-text>
     </v-card>
+
+    <!-- Add save button at the bottom -->
+    <div class="mt-6 flex justify-end">
+      <v-btn
+        type="submit"
+        color="#2EC4B6"
+        :disabled="!valid"
+        class="px-6"
+      >
+        Save Behavior Information
+      </v-btn>
+    </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import type { VForm } from 'vuetify/components';
+
+const props = defineProps<{
+    petId: number;
+}>();
 
 const valid = ref(false);
-const form = ref(null);
+const form = ref<VForm | null>(null);
 
 // Form data
 const selectedBehaviors = ref([]);
@@ -90,24 +108,42 @@ const behaviorOptions = [
   'Destructive Behavior'
 ];
 
-// Methods
+const submitForm = () => {
+    const formData = {
+        pet_id: props.petId,
+        behaviors: selectedBehaviors.value,
+        behavior_notes: behaviorNotes.value,
+        general_notes: generalNotes.value
+    };
+
+    useForm(formData).post(route('behaviors.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            reset();
+        }
+    });
+};
+
 const validate = async () => {
-  const { valid } = await form.value.validate();
-  return valid;
+    if (!form.value) return false;
+    const { valid } = await form.value.validate();
+    return valid;
 };
 
 const reset = () => {
-  form.value.reset();
-  selectedBehaviors.value = [];
-  behaviorNotes.value = '';
-  generalNotes.value = '';
+    if (!form.value) return;
+    form.value.reset();
+    selectedBehaviors.value = [];
+    behaviorNotes.value = '';
+    generalNotes.value = '';
 };
 
 // Expose methods to parent component
 defineExpose({
-  validate,
-  reset,
-  selectedBehaviors,
-  behaviorNotes
+    validate,
+    reset,
+    selectedBehaviors,
+    behaviorNotes,
+    submitForm
 });
 </script>
