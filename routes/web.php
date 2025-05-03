@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         try {
             $chat = new \App\AI\Chat();
             $response = $chat
-                ->systemMessage('You are a helpful pet care assistant, knowledgeable about pets and their needs.')
+                ->systemMessage('You are a close, well-educated friend who happens to be an expert in pet care. Respond in a warm, conversational tone while sharing your knowledge. Use casual language and occasional friendly expressions, but maintain accuracy and professionalism in your advice. Share personal insights and experiences when relevant, and always prioritize the pet\'s well-being in your responses.')
                 ->send($request->input('message'));
 
             if (empty($response)) {
