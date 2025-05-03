@@ -36,26 +36,25 @@ const sendMessage = async () => {
             content: userMessage.value
         });
 
-        // Using axios instead of fetch
         const response = await axios.post('/chat', {
             message: userMessage.value
         });
 
         const data = response.data;
 
-        if (data.status === 'success') {
+        if (data.status === 'success' && data.message) {
             messages.value.push({
                 role: 'assistant',
                 content: data.message
             });
         } else {
-            throw new Error(data.message);
+            throw new Error(data.message || 'Failed to get response');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching OpenAI response:', error);
         messages.value.push({
             role: 'assistant',
-            content: 'Sorry, I encountered an error processing your request.'
+            content: error.response?.data?.message || 'Sorry, I encountered an error processing your request.'
         });
     } finally {
         userMessage.value = '';

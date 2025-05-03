@@ -22,23 +22,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/chat', function (Request $request) {
         try {
-            $client = \OpenAI::client(config('services.openai.secret'));
-            $response = $client->chat()->create([
-                'model' => 'gpt-4o-mini-search-preview',
-                'messages' => [
-                    ['role' => 'system', 'content' => 'You are a helpful pet care assistant, knowledgeable about pets and their needs.'],
-                    ['role' => 'user', 'content' => $request->input('message')]
-                ],
-                'max_tokens' => 150,
-            ]);
+            $chat = new \App\AI\Chat();
+            $response = $chat
+                ->systemMessage('You are a helpful pet care assistant, knowledgeable about pets and their needs.')
+                ->send($request->input('message'));
+
+            if (empty($response)) {
+                throw new \Exception('Received empty response from the assistant');
+            }
 
             return response()->json([
-                'message' => $response->choices[0]->message->content,
+                'message' => $response,
                 'status' => 'success'
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error processing your request',
+                'message' => 'Error processing your request: ' . $e->getMessage(),
                 'status' => 'error'
             ], 500);
         }
