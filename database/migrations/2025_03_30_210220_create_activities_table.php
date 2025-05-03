@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('duration_unit')->nullable();
             $table->integer('frequency_value')->nullable();
             $table->string('frequency_unit')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -54,7 +54,17 @@ class Pet extends Model
     // In your Pet model
     public function petInfo()
     {
-        return $this->hasMany(PetInfo::class);
+        return $this->hasOne(PetInfo::class);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function dailyActivities()
+    {
+        return $this->hasManyThrough(DailyActivity::class, Activity::class);
     }
 
 }

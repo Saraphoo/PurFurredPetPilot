@@ -12,6 +12,7 @@ use App\Http\Controllers\HousingController;
 use App\Http\Controllers\MedicalController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\ActivityController;
 
 
 Route::get('/', function () {
@@ -78,6 +79,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/pets/{pet}/behaviors', [BehaviorController::class, 'store'])->name('behaviors.store');
     Route::put('/pets/{pet}/behaviors', [BehaviorController::class, 'update'])->name('behaviors.update');
     Route::post('/pets/{pet}/behaviors/log', [BehaviorController::class, 'logDailyBehavior'])->name('behaviors.log');
+
+    // Activity routes
+    Route::get('/pets/{pet}/activities', [ActivityController::class, 'index'])->name('activities.index');
+    Route::post('/pets/{pet}/activities', [ActivityController::class, 'store'])->name('activities.store');
+    Route::put('/pets/{pet}/activities', [ActivityController::class, 'update'])->name('activities.update');
+    Route::post('/pets/{pet}/activities/log', [ActivityController::class, 'logDailyActivity'])->name('activities.log');
 
     // Medication routes
     Route::post('/pets/{pet}/medications', [MedicationController::class, 'store'])->name('medications.store');

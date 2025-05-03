@@ -31,23 +31,31 @@ class ActivityController extends Controller
             'activities.*.duration_unit' => 'required|string',
             'activities.*.frequency_value' => 'required|integer',
             'activities.*.frequency_unit' => 'required|string',
+            'notes' => 'nullable|string'
         ]);
 
-        // Delete existing activities
-        $pet->activities()->delete();
-
         // Create new activities
+        $createdActivities = [];
         foreach ($validated['activities'] as $activity) {
             $created = $pet->activities()->create([
                 'activity' => $activity['name'],
                 'duration_value' => $activity['duration_value'],
                 'duration_unit' => $activity['duration_unit'],
                 'frequency_value' => $activity['frequency_value'],
-                'frequency_unit' => $activity['frequency_unit']
+                'frequency_unit' => $activity['frequency_unit'],
+                'notes' => $validated['notes'] ?? null
             ]);
+            $createdActivities[] = $created;
             Log::info('Created activity:', ['activity' => $created->toArray()]);
         }
 
-        return response()->json(['message' => 'Activities saved successfully']);
+        // Return all activities for the pet
+        return response()->json($pet->activities()->get());
+    }
+
+    public function destroy(Activity $activity)
+    {
+        $activity->delete(); // This will soft delete the activity
+        return response()->json(['message' => 'Activity deleted successfully']);
     }
 } 

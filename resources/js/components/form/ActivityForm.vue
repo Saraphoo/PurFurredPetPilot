@@ -119,6 +119,7 @@ import axios from 'axios';
 import type { VForm } from 'vuetify/components';
 
 interface Activity {
+    id?: number;
     name: string;
     duration_value: string;
     duration_unit: string;
@@ -184,7 +185,16 @@ const addActivity = () => {
     });
 };
 
-const removeActivity = (index: number) => {
+const removeActivity = async (index: number) => {
+    const activity = activities.value[index];
+    if (activity.id) {
+        try {
+            await axios.delete(route('activities.destroy', { activity: activity.id }));
+        } catch (error) {
+            console.error('Error deleting activity:', error);
+            return;
+        }
+    }
     activities.value.splice(index, 1);
 };
 
@@ -207,70 +217,75 @@ const reset = () => {
     generalNotes.value = '';
 };
 
-const submitForm = () => {
+const submitForm = async () => {
+    if (!await validate()) return;
+
     const formData = {
         pet_id: props.petId,
         activities: activities.value.map((activity: Activity) => ({
             name: activity.name,
-            duration_value: activity.duration_value,
+            duration_value: parseInt(activity.duration_value),
             duration_unit: activity.duration_unit,
-            frequency_value: activity.frequency_value,
+            frequency_value: parseInt(activity.frequency_value),
             frequency_unit: activity.frequency_unit
         })),
         notes: generalNotes.value
     };
 
-    useForm(formData).post(route('activities.store', { pet: props.petId }), {
-        preserveScroll: true,
-        onSuccess: () => {
-            reset();
-        }
-    });
-};
-
-// Load saved activities
-const loadActivities = async () => {
     try {
-        console.log('Loading activities for pet:', props.petId);
-        const response = await axios.get(`/pets/${props.petId}/activities`);
-        console.log('Received activities:', response.data);
-
+        const response = await axios.post(route('activities.store', { pet: props.petId }), formData);
+        console.log('Save response:', response.data);
+        
+        // Update activities with all activities for the pet
         if (response.data && response.data.length > 0) {
-            activities.value = response.data.map(activity => ({
+            activities.value = response.data.map((activity: any) => ({
+                id: activity.id,
                 name: activity.activity,
                 duration_value: activity.duration_value?.toString() || '',
                 duration_unit: activity.duration_unit || '',
                 frequency_value: activity.frequency_value?.toString() || '',
                 frequency_unit: activity.frequency_unit || ''
             }));
-            console.log('Mapped activities:', activities.value);
-        } else {
-            console.log('No activities found');
+            generalNotes.value = response.data[0].notes || '';
         }
-    } catch (error) {
-        console.error('Error loading activities:', error);
-    }
-};
-
-// Autosave functionality
-const autosave = async () => {
-    if (!await validate()) return;
-
-    try {
-        console.log('Saving activities:', activities.value);
-        const response = await axios.post(`/pets/${props.petId}/activities`, {
-            activities: activities.value
-        });
-        console.log('Save response:', response.data);
     } catch (error) {
         console.error('Error saving activities:', error);
     }
 };
 
-// Watch for changes and trigger autosave
-watch(activities, () => {
-    autosave();
-}, { deep: true });
+// Load saved activities
+const loadActivities = async () => {
+    try {
+        console.log('Loading activities for pet:', props.petId);
+        const response = await axios.get(route('activities.index', { pet: props.petId }));
+        console.log('Received activities:', response.data);
+
+        if (response.data && response.data.length > 0) {
+            activities.value = response.data.map((activity: any) => ({
+                name: activity.activity,
+                duration_value: activity.duration_value?.toString() || '',
+                duration_unit: activity.duration_unit || '',
+                frequency_value: activity.frequency_value?.toString() || '',
+                frequency_unit: activity.frequency_unit || ''
+            }));
+            generalNotes.value = response.data[0].notes || '';
+            console.log('Mapped activities:', activities.value);
+        } else {
+            console.log('No activities found');
+            // Reset to default state if no activities found
+            activities.value = [{
+                name: '',
+                duration_value: '',
+                duration_unit: '',
+                frequency_value: '',
+                frequency_unit: ''
+            }];
+            generalNotes.value = '';
+        }
+    } catch (error) {
+        console.error('Error loading activities:', error);
+    }
+};
 
 // Load activities when component is mounted
 onMounted(() => {
