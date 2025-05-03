@@ -28,7 +28,7 @@ class HousingController extends Controller
         if ($request->has('accessories')) {
             foreach ($request->accessories as $accessory) {
                 $housing->accessories()->create([
-                    'type' => $accessory['type'],
+                    'accessory_type' => $accessory['type'],
                     'name' => $accessory['name'],
                     'size' => $accessory['size'],
                     'brand' => $accessory['brand'],
@@ -59,7 +59,7 @@ class HousingController extends Controller
             $housing->accessories()->delete(); // Remove existing accessories
             foreach ($request->accessories as $accessory) {
                 $housing->accessories()->create([
-                    'type' => $accessory['type'],
+                    'accessory_type' => $accessory['type'],
                     'name' => $accessory['name'],
                     'size' => $accessory['size'],
                     'brand' => $accessory['brand'],

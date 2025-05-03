@@ -2,6 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pet;
+use App\Models\Medical;
+use App\Models\Meal;
+use App\Models\Behavior;
+use App\Models\Housing;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -72,10 +76,20 @@ class PetController extends Controller
     public function show(Pet $pet)
     {
         $pet->load('petInfo');
+        
+        // Load initial data for each form
+        $initialData = [
+            'medical' => Medical::where('pet_id', $pet->id)->first(),
+            'meals' => Meal::where('pet_id', $pet->id)->first(),
+            'behavior' => Behavior::where('pet_id', $pet->id)->first(),
+            'housing' => Housing::where('pet_id', $pet->id)->first(),
+        ];
+
         // Return the Inertia response with the pet's data
         return Inertia::render('pets/Show', [
             'pet' => $pet,
             'petInfo' => $pet->petInfo,
+            'initialData' => $initialData
         ]);
     }
 

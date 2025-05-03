@@ -159,18 +159,34 @@ import type { VForm } from 'vuetify/components';
 
 const props = defineProps<{
     petId: number;
+    initialData?: {
+        total_space_value: string;
+        total_space_unit: string;
+        housing_type: string;
+        flooring_type: string;
+        bedding_type: string;
+        accessories: Array<{
+            type: string;
+            name: string;
+            size: string;
+            brand: string;
+            material: string;
+            notes: string;
+        }>;
+        notes: string;
+    };
 }>();
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
 
 // Form data
-const totalSpaceValue = ref('');
-const totalSpaceUnit = ref('');
-const housingType = ref('');
-const flooringType = ref('');
-const beddingType = ref('');
-const accessories = ref([{
+const totalSpaceValue = ref(props.initialData?.total_space_value || '');
+const totalSpaceUnit = ref(props.initialData?.total_space_unit || '');
+const housingType = ref(props.initialData?.housing_type || '');
+const flooringType = ref(props.initialData?.flooring_type || '');
+const beddingType = ref(props.initialData?.bedding_type || '');
+const accessories = ref(props.initialData?.accessories || [{
   type: '',
   name: '',
   size: '',
@@ -178,7 +194,7 @@ const accessories = ref([{
   material: '',
   notes: ''
 }]);
-const generalNotes = ref('');
+const generalNotes = ref(props.initialData?.notes || '');
 
 // Options
 const spaceUnits = [
@@ -308,7 +324,14 @@ const submitForm = () => {
         housing_type: housingType.value,
         flooring_type: flooringType.value,
         bedding_type: beddingType.value,
-        accessories: accessories.value,
+        accessories: accessories.value.map(accessory => ({
+            type: accessory.type,
+            name: accessory.name || '',
+            size: accessory.size || '',
+            brand: accessory.brand || '',
+            material: accessory.material || '',
+            notes: accessory.notes || ''
+        })),
         notes: generalNotes.value
     };
 

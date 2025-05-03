@@ -148,25 +148,38 @@ import type { VForm } from 'vuetify/components';
 
 const props = defineProps<{
     petId: number;
+    initialData?: {
+        special_needs: Array<{
+            name: string;
+            affects: string;
+            notes: string;
+        }>;
+        medications: Array<{
+            name: string;
+            prescribed_on: string;
+            notes: string;
+        }>;
+        notes: string;
+    };
 }>();
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
 
 // Form data
-const specialNeeds = ref([{
+const specialNeeds = ref(props.initialData?.special_needs || [{
   name: '',
   affects: '',
   notes: ''
 }]);
 
-const medications = ref([{
+const medications = ref(props.initialData?.medications || [{
   name: '',
   prescribed_on: '',
   notes: ''
 }]);
 
-const generalNotes = ref('');
+const generalNotes = ref(props.initialData?.notes || '');
 
 // Options
 const specialNeedOptions = [

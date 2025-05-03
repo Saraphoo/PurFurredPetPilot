@@ -18,6 +18,7 @@ class BehaviorController extends Controller
         ]);
 
         $validated['pet_id'] = $pet;
+        $validated['behaviors'] = json_encode($validated['behaviors']);
         $behavior = Behavior::create($validated);
 
         return redirect()->back()->with('success', 'Behavior information created successfully');

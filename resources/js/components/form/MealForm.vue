@@ -127,13 +127,24 @@ import type { VForm } from 'vuetify/components';
 
 const props = defineProps<{
     petId: number;
+    initialData?: {
+        meals: Array<{
+            feed_time: string;
+            food_name: string;
+            brand: string;
+            meal_type: string;
+            serving_value: string;
+            serving_unit: string;
+        }>;
+        notes: string;
+    };
 }>();
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
 
 // Form data
-const meals = ref([{
+const meals = ref(props.initialData?.meals || [{
   feed_time: '',
   food_name: '',
   brand: '',
@@ -142,7 +153,7 @@ const meals = ref([{
   serving_unit: ''
 }]);
 
-const generalNotes = ref('');
+const generalNotes = ref(props.initialData?.notes || '');
 
 // Options
 const foodOptions = [

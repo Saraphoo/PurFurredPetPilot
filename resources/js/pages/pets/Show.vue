@@ -28,6 +28,12 @@ const props = defineProps<{
         DOB: string | null;
     };
     petInfo: Array<PetInfoItem>;
+    initialData: {
+        medical: any;
+        meals: any;
+        behavior: any;
+        housing: any;
+    };
 }>();
 
 
@@ -97,6 +103,22 @@ const currentForm = computed(() => {
   }
 });
 
+// Add computed property for initial data
+const currentFormInitialData = computed(() => {
+  switch (selectedForm.value) {
+    case 'medical':
+      return props.initialData.medical;
+    case 'meals':
+      return props.initialData.meals;
+    case 'behavior':
+      return props.initialData.behavior;
+    case 'housing':
+      return props.initialData.housing;
+    default:
+      return null;
+  }
+});
+
 </script>
 
 <template>
@@ -132,28 +154,18 @@ const currentForm = computed(() => {
             mandatory
             class="mb-4 custom-toggle"
         >
-            <v-btn value="activity" class="custom-btn">
-                Activities
-            </v-btn>
-            <v-btn value="meal" class="custom-btn">
-                Meals
-            </v-btn>
-            <v-btn value="medical" class="custom-btn">
-                Medical
-            </v-btn>
-            <v-btn value="housing" class="custom-btn">
-                Housing
-            </v-btn>
-            <v-btn value="behavior" class="custom-btn">
-                Behavior
-            </v-btn>
+            <v-btn value="activity">Activity</v-btn>
+            <v-btn value="meal">Meal</v-btn>
+            <v-btn value="medical">Medical</v-btn>
+            <v-btn value="housing">Housing</v-btn>
+            <v-btn value="behavior">Behavior</v-btn>
         </v-btn-toggle>
 
         <!-- Dynamic Form Component -->
         <component
             :is="currentForm"
-            ref="currentFormRef"
             :pet-id="pet.id"
+            :initial-data="currentFormInitialData"
         />
 
     </div>

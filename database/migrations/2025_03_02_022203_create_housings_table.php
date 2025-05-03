@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('housings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pet_id')->constrained('pets')->onDelete('cascade');
-            $table->decimal('total_space_value', 10, 2);
-            $table->string('total_space_unit');
-            $table->string('housing_type');
-            $table->string('flooring_type');
-            $table->string('bedding_type');
+            $table->decimal('total_space_value', 10, 2)->nullable();
+            $table->string('total_space_unit')->nullable();
+            $table->string('housing_type')->nullable();
+            $table->string('flooring_type')->nullable();
+            $table->string('bedding_type')->nullable();
             $table->json('accessories')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

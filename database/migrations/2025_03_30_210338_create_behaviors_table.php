@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('behaviors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pet_id')->constrained('pets')->onDelete('cascade');
-            $table->string('behaviors');
-            $table->string('notes')->nullable();
+            $table->json('behaviors');
+            $table->text('behavior_notes')->nullable();
+            $table->text('general_notes')->nullable();
+            $table->timestamps();
         });
     }
 

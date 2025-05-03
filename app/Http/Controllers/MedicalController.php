@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SpecialNeed;
 use App\Models\Medication;
 use App\Models\DailyMedication;
+use App\Models\Medical;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

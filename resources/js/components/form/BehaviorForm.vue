@@ -74,15 +74,20 @@ import type { VForm } from 'vuetify/components';
 
 const props = defineProps<{
     petId: number;
+    initialData?: {
+        behaviors: string[];
+        behavior_notes: string;
+        general_notes: string;
+    };
 }>();
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
 
 // Form data
-const selectedBehaviors = ref([]);
-const behaviorNotes = ref('');
-const generalNotes = ref('');
+const selectedBehaviors = ref(props.initialData?.behaviors || []);
+const behaviorNotes = ref(props.initialData?.behavior_notes || '');
+const generalNotes = ref(props.initialData?.general_notes || '');
 
 // Options
 const behaviorOptions = [

@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('housing_accessories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('housing_id')->constrained('housing')->onDelete('cascade');
+            $table->foreignId('housing_id')->constrained('housings')->onDelete('cascade');
             $table->string('accessory_type');
             $table->string('name')->nullable();
             $table->string('brand')->nullable();
             $table->string('accessory_size')->nullable();
             $table->string('material')->nullable();
             $table->string('notes')->nullable();
+            $table->timestamps();
         });
     }
 
