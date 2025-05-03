@@ -186,13 +186,13 @@ const currentForm = computed(() => {
 }
 
 .custom-toggle :deep(.v-btn--active) {
-    background-color: #2EC4B6 !important;
+    background-color: #27b99c !important;
     color: white !important;
     font-weight: 600 !important;
 }
 
 .custom-toggle :deep(.v-btn--active:hover) {
-    background-color: #2EC4B6 !important;
+    background-color: #27b99c !important;
     opacity: 0.9;
 }
 </style>
