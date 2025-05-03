@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class MealController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $pet)
     {
         $validated = $request->validate([
             'feed_time' => 'required|date_format:H:i',
@@ -18,10 +18,10 @@ class MealController extends Controller
             'meal_type' => 'required|string|max:255',
             'serving_value' => 'required|numeric',
             'serving_unit' => 'required|string|max:50',
-            'notes' => 'nullable|string',
-            'pet_id' => 'required|exists:pets,id'
+            'notes' => 'nullable|string'
         ]);
 
+        $validated['pet_id'] = $pet;
         $meal = Meal::create($validated);
 
         return redirect()->back()->with('success', 'Meal schedule created successfully');

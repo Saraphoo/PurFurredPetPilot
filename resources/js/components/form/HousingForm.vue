@@ -312,7 +312,7 @@ const submitForm = () => {
         notes: generalNotes.value
     };
 
-    useForm(formData).post(route('housing.store'), {
+    useForm(formData).post(route('housing.store', { pet: props.petId }), {
         preserveScroll: true,
         onSuccess: () => {
             reset();

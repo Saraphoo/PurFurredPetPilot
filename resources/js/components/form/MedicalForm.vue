@@ -211,7 +211,7 @@ const addSpecialNeed = () => {
   });
 };
 
-const removeSpecialNeed = (index) => {
+const removeSpecialNeed = (index: number) => {
   specialNeeds.value.splice(index, 1);
 };
 
@@ -223,7 +223,7 @@ const addMedication = () => {
   });
 };
 
-const removeMedication = (index) => {
+const removeMedication = (index: number) => {
   medications.value.splice(index, 1);
 };
 
@@ -235,7 +235,7 @@ const submitForm = () => {
         notes: generalNotes.value
     };
 
-    useForm(formData).post(route('medical.store'), {
+    useForm(formData).post(route('medical.store', { pet: props.petId }), {
         preserveScroll: true,
         onSuccess: () => {
             reset();
@@ -262,6 +262,7 @@ const reset = () => {
         prescribed_on: '',
         notes: ''
     }];
+    generalNotes.value = '';
 };
 
 // Expose methods to parent component

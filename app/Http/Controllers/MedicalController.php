@@ -10,36 +10,16 @@ use Inertia\Inertia;
 
 class MedicalController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $pet)
     {
         $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
-            'special_needs' => 'array',
-            'special_needs.*.name' => 'required|string|max:255',
-            'special_needs.*.affects' => 'required|string|max:255',
-            'special_needs.*.notes' => 'nullable|string',
-            'medications' => 'array',
-            'medications.*.name' => 'required|string|max:255',
-            'medications.*.prescribed_on' => 'required|date',
-            'medications.*.notes' => 'nullable|string',
+            'special_needs' => 'required|array',
+            'medications' => 'required|array',
             'notes' => 'nullable|string'
         ]);
 
-        $pet = Pet::findOrFail($validated['pet_id']);
-
-        // Create special needs
-        if (isset($validated['special_needs'])) {
-            foreach ($validated['special_needs'] as $need) {
-                $pet->specialNeeds()->create($need);
-            }
-        }
-
-        // Create medications
-        if (isset($validated['medications'])) {
-            foreach ($validated['medications'] as $medication) {
-                $pet->medications()->create($medication);
-            }
-        }
+        $validated['pet_id'] = $pet;
+        $medical = Medical::create($validated);
 
         return redirect()->back()->with('success', 'Medical information created successfully');
     }

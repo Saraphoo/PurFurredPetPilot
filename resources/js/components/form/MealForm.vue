@@ -203,25 +203,6 @@ const removeMeal = (index: number) => {
   meals.value.splice(index, 1);
 };
 
-const validate = async () => {
-  if (!form.value) return false;
-  const { valid } = await form.value.validate();
-  return valid;
-};
-
-const reset = () => {
-  if (!form.value) return;
-  form.value.reset();
-  meals.value = [{
-    feed_time: '',
-    food_name: '',
-    brand: '',
-    meal_type: '',
-    serving_value: '',
-    serving_unit: ''
-  }];
-};
-
 const submitForm = () => {
     const formData = {
         pet_id: props.petId,
@@ -229,21 +210,39 @@ const submitForm = () => {
         notes: generalNotes.value
     };
 
-    useForm(formData).post(route('meals.store'), {
+    useForm(formData).post(route('meals.store', { pet: props.petId }), {
         preserveScroll: true,
         onSuccess: () => {
-            // Reset form after successful submission
             reset();
         }
     });
 };
 
+const validate = async () => {
+    if (!form.value) return false;
+    const { valid } = await form.value.validate();
+    return valid;
+};
+
+const reset = () => {
+    if (!form.value) return;
+    form.value.reset();
+    meals.value = [{
+        feed_time: '',
+        food_name: '',
+        brand: '',
+        meal_type: '',
+        serving_value: '',
+        serving_unit: ''
+    }];
+};
+
 // Expose methods to parent component
 defineExpose({
-  validate,
-  reset,
-  meals,
-  submitForm
+    validate,
+    reset,
+    meals,
+    submitForm
 });
 </script>
 

@@ -173,7 +173,7 @@ const submitForm = () => {
         expiration_date: expirationDate.value
     };
 
-    useForm(formData).post(route('medications.store'), {
+    useForm(formData).post(route('medications.store', { pet: props.petId }), {
         preserveScroll: true,
         onSuccess: () => {
             reset();

@@ -9,25 +9,16 @@ use Inertia\Inertia;
 
 class BehaviorController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $pet)
     {
         $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
             'behaviors' => 'required|array',
-            'behaviors.*' => 'required|string|max:255',
             'behavior_notes' => 'nullable|string',
             'general_notes' => 'nullable|string'
         ]);
 
-        $pet = Pet::findOrFail($validated['pet_id']);
-
-        // Create behaviors
-        foreach ($validated['behaviors'] as $behavior) {
-            $pet->behaviors()->create([
-                'name' => $behavior,
-                'notes' => $validated['behavior_notes'] ?? null
-            ]);
-        }
+        $validated['pet_id'] = $pet;
+        $behavior = Behavior::create($validated);
 
         return redirect()->back()->with('success', 'Behavior information created successfully');
     }

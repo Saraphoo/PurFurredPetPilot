@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('housings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pet_id')->constrained('pets')->onDelete('cascade');
-            $table->string('housing_type');
             $table->decimal('total_space_value', 10, 2);
             $table->string('total_space_unit');
+            $table->string('housing_type');
             $table->string('flooring_type');
             $table->string('bedding_type');
+            $table->json('accessories')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });
@@ -31,4 +32,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('housings');
     }
-};
+}; 

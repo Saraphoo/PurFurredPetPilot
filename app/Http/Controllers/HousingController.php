@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class HousingController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $pet)
     {
         $validated = $request->validate([
             'total_space_value' => 'required|numeric',
@@ -17,10 +17,11 @@ class HousingController extends Controller
             'housing_type' => 'required|string|max:255',
             'flooring_type' => 'required|string|max:255',
             'bedding_type' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-            'pet_id' => 'required|exists:pets,id'
+            'accessories' => 'required|array',
+            'notes' => 'nullable|string'
         ]);
 
+        $validated['pet_id'] = $pet;
         $housing = Housing::create($validated);
 
         // Handle accessories if provided

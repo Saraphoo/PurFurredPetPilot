@@ -8,10 +8,9 @@ use Inertia\Inertia;
 
 class MedicationController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $pet)
     {
         $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
             'medication_name' => 'required|string|max:255',
             'dosage' => 'required|string|max:255',
             'frequency' => 'required|string|max:255',
@@ -23,9 +22,10 @@ class MedicationController extends Controller
             'expiration_date' => 'nullable|date'
         ]);
 
+        $validated['pet_id'] = $pet;
         $medication = Medication::create($validated);
 
-        return redirect()->back()->with('success', 'Medication created successfully');
+        return redirect()->back()->with('success', 'Medication information created successfully');
     }
 
     public function update(Request $request, Medication $medication)

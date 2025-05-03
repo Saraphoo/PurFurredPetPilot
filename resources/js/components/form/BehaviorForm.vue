@@ -116,7 +116,7 @@ const submitForm = () => {
         general_notes: generalNotes.value
     };
 
-    useForm(formData).post(route('behaviors.store'), {
+    useForm(formData).post(route('behaviors.store', { pet: props.petId }), {
         preserveScroll: true,
         onSuccess: () => {
             reset();
