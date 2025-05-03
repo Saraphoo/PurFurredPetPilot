@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { Button } from "@/components/ui/button";
 import axios from 'axios'; // Make sure axios is installed
 
@@ -8,6 +8,21 @@ const userMessage = ref('');
 const messages = ref<Array<{ role: 'user' | 'assistant', content: string }>>([]);
 const isLoading = ref(false);
 const isDrawerOpen = ref(false);
+const messagesContainer = ref<HTMLElement | null>(null);
+
+// Function to scroll to bottom of messages
+const scrollToBottom = () => {
+    if (messagesContainer.value) {
+        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
+};
+
+// Watch for changes in messages and scroll to bottom
+watch(messages, () => {
+    nextTick(() => {
+        scrollToBottom();
+    });
+}, { deep: true });
 
 // Function to send a message to the OpenAI API endpoint
 const sendMessage = async () => {
@@ -88,13 +103,13 @@ const sendMessage = async () => {
             </div>
 
             <!-- Chat Messages -->
-            <div class="flex-grow overflow-y-auto mb-4">
+            <div ref="messagesContainer" class="flex-grow overflow-y-auto mb-4">
                 <div v-for="(message, index) in messages" :key="index" class="mb-4">
                     <div :class="[
                         'p-3 rounded-lg max-w-[85%]',
                         message.role === 'user'
                             ? 'bg-[#FF9F1C] text-white ml-auto'
-                            : 'bg-muted text-muted-foreground'
+                            : 'bg-muted text-black'
                     ]">
                         {{ message.content }}
                     </div>

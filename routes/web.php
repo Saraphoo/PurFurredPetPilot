@@ -24,12 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         try {
             $client = \OpenAI::client(config('services.openai.secret'));
             $response = $client->chat()->create([
-                'model' => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini-search-preview',
                 'messages' => [
                     ['role' => 'system', 'content' => 'You are a helpful pet care assistant, knowledgeable about pets and their needs.'],
                     ['role' => 'user', 'content' => $request->input('message')]
                 ],
-                'max_tokens' => 15,
+                'max_tokens' => 150,
             ]);
 
             return response()->json([
