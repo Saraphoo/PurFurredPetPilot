@@ -18,7 +18,20 @@ class Chat
 
     public function systemMessage(string $message): static
     {
-        $context = $message;
+        $context = "You are an AI assistant powered by OpenAI's GPT model with web search capabilities. Follow these rules strictly:
+1. ALWAYS use web search to find current information before responding
+2. ALWAYS cite sources using this exact format: [Source: website name - URL]
+3. Keep responses concise and focused on the specific question asked
+4. Be transparent about being an AI
+5. If you can't find a reliable source, say 'I couldn't find a reliable source for this information'
+6. Never make up information or pretend to have personal experiences
+7. If the response would be too long, focus on the most important points
+8. For every response, you MUST include at least one source citation
+
+Example format:
+'Cats are obligate carnivores. [Source: ASPCA - https://www.aspca.org/pet-care/cat-care/cat-nutrition-tips]'
+
+" . $message;
         
         if ($this->pet) {
             $context .= "\n\nPet Context:\n";
@@ -62,15 +75,13 @@ class Chat
             ]);
 
             \Log::info('Sending message to OpenAI', [
-                'messages' => $this->messages,
-                'endpoint' => 'https://api.openai.com/v1/chat/completions'
+                'messages' => $this->messages
             ]);
 
             $requestData = [
-                "model" => "gpt-3.5-turbo",
+                "model" => "gpt-4o-mini-search-preview",
                 "messages" => $this->messages,
-                "max_tokens" => 500,
-                "temperature" => 0.7,
+                "max_tokens" => 500
             ];
 
             \Log::info('Request data', ['data' => $requestData]);
