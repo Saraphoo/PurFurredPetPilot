@@ -107,7 +107,11 @@ const currentForm = computed(() => {
 const currentFormInitialData = computed(() => {
   switch (selectedForm.value) {
     case 'medical':
-      return props.initialData.medical;
+      return {
+        special_needs: props.initialData.medical?.special_needs || [],
+        medications: props.initialData.medical?.medications || [],
+        notes: props.initialData.medical?.notes || ''
+      };
     case 'meals':
       return props.initialData.meals;
     case 'behavior':

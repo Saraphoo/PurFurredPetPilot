@@ -117,6 +117,7 @@ import { ref, watch, onMounted } from 'vue';
 import { useForm } from '@inertiajs/inertia-vue3';
 import axios from 'axios';
 import type { VForm } from 'vuetify/components';
+import { withDefaults } from 'vue';
 
 interface Activity {
     id?: number;
@@ -127,26 +128,35 @@ interface Activity {
     frequency_unit: string;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     petId: number;
-    initialData?: {
-        activities: Activity[];
-        notes: string;
-    };
-}>();
+    petInfo?: Array<{
+        key: string;
+        value: string;
+    }>;
+    initialData?: Array<{
+        name: string;
+        duration_value: string;
+        duration_unit: string;
+        frequency_value: string;
+        frequency_unit: string;
+    }>;
+}>(), {
+    petInfo: () => []
+});
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
 
 // Form data
-const activities = ref<Activity[]>(props.initialData?.activities || [{
+const activities = ref<Activity[]>(props.initialData || [{
     name: '',
     duration_value: '',
     duration_unit: '',
     frequency_value: '',
     frequency_unit: ''
 }]);
-const generalNotes = ref(props.initialData?.notes || '');
+const generalNotes = ref('');
 
 // Options
 const activityOptions = [

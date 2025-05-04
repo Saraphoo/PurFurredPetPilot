@@ -49,8 +49,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Pets that the user owns (through user_id in pets table)
     public function pets()
     {
         return $this->hasMany(Pet::class);
+    }
+
+    // Pets that the user has access to through the pet_user pivot table
+    public function sharedPets()
+    {
+        return $this->belongsToMany(Pet::class, 'pet_user');
     }
 }

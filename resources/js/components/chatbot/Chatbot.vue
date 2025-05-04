@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 import { Button } from "@/components/ui/button";
-import axios from 'axios'; // Make sure axios is installed
+import { router } from '@inertiajs/vue3';
 
 // Reactive state for chat messages, loading state, and drawer state
 const userMessage = ref('');
@@ -9,6 +9,50 @@ const messages = ref<Array<{ role: 'user' | 'assistant', content: string }>>([])
 const isLoading = ref(false);
 const isDrawerOpen = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
+const selectedPetId = ref<number | null>(null);
+
+// Define props for Inertia data
+const props = defineProps<{
+    pets?: Array<{ id: number, name: string }>
+}>();
+
+// Initialize userPets with props data
+const userPets = ref<Array<{ id: number, name: string }>>(props.pets || []);
+
+// Fetch user's pets when component mounts
+const fetchUserPets = async () => {
+    try {
+        console.log('Fetching pets...');
+        const response = await fetch('/api/user/pets', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            credentials: 'same-origin'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch pets');
+        }
+        
+        const data = await response.json();
+        console.log('Pets data:', data);
+        
+        if (data.pets && Array.isArray(data.pets)) {
+            userPets.value = data.pets;
+            console.log('Updated userPets:', userPets.value);
+        }
+    } catch (error: any) {
+        console.error('Error in fetchUserPets:', error);
+    }
+};
+
+// Call fetchUserPets when component mounts
+onMounted(() => {
+    fetchUserPets();
+});
 
 // Function to scroll to bottom of messages
 const scrollToBottom = () => {
@@ -28,37 +72,40 @@ watch(messages, () => {
 const sendMessage = async () => {
     if (!userMessage.value.trim()) return;
 
+    const messageContent = userMessage.value;
+    userMessage.value = '';
+    messages.value.push({ role: 'user', content: messageContent });
+
     try {
-        isLoading.value = true;
-        // Add user message to chat
-        messages.value.push({
-            role: 'user',
-            content: userMessage.value
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                message: messageContent,
+                pet_id: selectedPetId.value
+            })
         });
 
-        const response = await axios.post('/chat', {
-            message: userMessage.value
-        });
+        if (!response.ok) {
+            throw new Error('Failed to send message');
+        }
 
-        const data = response.data;
-
-        if (data.status === 'success' && data.message) {
-            messages.value.push({
-                role: 'assistant',
-                content: data.message
-            });
-        } else {
-            throw new Error(data.message || 'Failed to get response');
+        const data = await response.json();
+        if (data.message) {
+            messages.value.push({ role: 'assistant', content: data.message });
         }
     } catch (error: any) {
-        console.error('Error fetching OpenAI response:', error);
-        messages.value.push({
-            role: 'assistant',
-            content: error.response?.data?.message || 'Sorry, I encountered an error processing your request.'
+        console.error('Error in sendMessage:', error);
+        messages.value.push({ 
+            role: 'assistant', 
+            content: 'Sorry, I encountered an error. Please try again.' 
         });
-    } finally {
-        userMessage.value = '';
-        isLoading.value = false;
     }
 };
 </script>
@@ -99,6 +146,19 @@ const sendMessage = async () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
+            </div>
+
+            <!-- Pet Selection -->
+            <div class="mb-4">
+                <select
+                    v-model="selectedPetId"
+                    class="w-full p-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#FF9F1C] focus:border-[#FF9F1C]"
+                >
+                    <option :value="null">Select a pet</option>
+                    <option v-for="pet in userPets" :key="pet.id" :value="pet.id">
+                        {{ pet.name }}
+                    </option>
+                </select>
             </div>
 
             <!-- Chat Messages -->

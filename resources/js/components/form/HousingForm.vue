@@ -1,164 +1,27 @@
 <template>
-  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-    <!-- Daily Living Space Section -->
-    <v-card class="mb-6">
-      <v-card-title class="text-h6">Daily Living Space</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="6">
-            <v-text-field
-              v-model="totalSpaceValue"
-              label="Total Space Value"
-              type="number"
-              :rules="[v => !!v || 'Total space value is required']"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-select
-              v-model="totalSpaceUnit"
-              :items="spaceUnits"
-              label="Space Unit"
-              :rules="[v => !!v || 'Space unit is required']"
-              required
-            ></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-select
-              v-model="housingType"
-              :items="housingTypes"
-              label="Housing Type"
-              :rules="[v => !!v || 'Housing type is required']"
-              required
-            ></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-select
-              v-model="flooringType"
-              :items="flooringTypes"
-              label="Flooring Type"
-              :rules="[v => !!v || 'Flooring type is required']"
-              required
-            ></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-select
-              v-model="beddingType"
-              :items="beddingTypes"
-              label="Bedding Type"
-              :rules="[v => !!v || 'Bedding type is required']"
-              required
-            ></v-select>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-
-    <!-- Housing Accessories Section -->
-    <v-card class="mb-6">
-      <v-card-title class="text-h6">Housing Accessories</v-card-title>
-      <v-card-text>
-        <v-row v-for="(accessory, index) in accessories" :key="index" class="mb-4">
-          <v-col cols="3">
-            <v-autocomplete
-              v-model="accessory.type"
-              :items="accessoryTypes"
-              label="Accessory Type"
-              :rules="[v => !!v || 'Accessory type is required']"
-              required
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="2">
-            <v-text-field
-              v-model="accessory.name"
-              label="Accessory Name"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="2">
-            <v-text-field
-              v-model="accessory.size"
-              label="Accessory Size"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="2">
-            <v-autocomplete
-              v-model="accessory.brand"
-              :items="brandOptions"
-              label="Brand"
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-              v-model="accessory.material"
-              :items="materialOptions"
-              label="Material"
-            ></v-select>
-          </v-col>
-          <v-col cols="1" class="text-right">
-            <v-btn
-              v-if="accessories.length > 1"
-              color="error"
-              icon
-              @click="removeAccessory(index)"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-
-        <v-btn
-          color="#2EC4B6"
-          @click="addAccessory"
-          class="mt-2"
-        >
-          Add Another Accessory
-        </v-btn>
-      </v-card-text>
-    </v-card>
-
-    <!-- General Notes Section -->
-    <v-card>
-      <v-card-title class="text-h6">General Notes</v-card-title>
-      <v-card-text>
-        <v-textarea
-          v-model="generalNotes"
-          label="Notes about pet's housing"
-          rows="4"
-          auto-grow
-        ></v-textarea>
-      </v-card-text>
-    </v-card>
-
-    <!-- Add save button at the bottom -->
-    <div class="mt-6 flex justify-end">
-      <v-btn
-        type="submit"
-        color="#2EC4B6"
-        :disabled="!valid"
-        class="px-6"
-      >
-        Save Housing Information
-      </v-btn>
-    </div>
-  </v-form>
+  <!-- <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
+    ... existing code ...
+  </v-form> -->
+  <div class="text-center py-8">
+    <v-icon size="64" color="grey">mdi-home</v-icon>
+    <h2 class="text-h4 mt-4">Coming Soon</h2>
+    <p class="text-grey mt-2">Housing tracking functionality is under development</p>
+  </div>
 </template>
 
 <script setup lang="ts">
+/* Commenting out all the existing code
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { VForm } from 'vuetify/components';
+import { withDefaults } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     petId: number;
+    petInfo?: Array<{
+        key: string;
+        value: string;
+    }>;
     initialData?: {
         total_space_value: string;
         total_space_unit: string;
@@ -175,7 +38,18 @@ const props = defineProps<{
         }>;
         notes: string;
     };
-}>();
+}>(), {
+    petInfo: () => [],
+    initialData: () => ({
+        total_space_value: '',
+        total_space_unit: '',
+        housing_type: '',
+        flooring_type: '',
+        bedding_type: '',
+        accessories: [],
+        notes: ''
+    })
+});
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
@@ -355,6 +229,7 @@ defineExpose({
   accessories,
   submitForm
 });
+*/
 </script>
 
 <style scoped>

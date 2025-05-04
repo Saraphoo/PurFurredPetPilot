@@ -13,6 +13,7 @@ use App\Http\Controllers\MedicalController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ChatController;
 
 
 Route::get('/', function () {
@@ -26,9 +27,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('pets/Show');
     })->name('pets.show');
 
-    Route::post('/chat', function (Request $request) {
+    Route::get('/api/user/pets', [ChatController::class, 'getPets']);
+    Route::post('/api/chat', function (Request $request) {
         try {
             $chat = new \App\AI\Chat();
+            
+            // Set pet context if a pet is selected
+            if ($request->pet_id) {
+                $pet = \App\Models\Pet::with('petInfo')->find($request->pet_id);
+                $chat->setPetContext($pet);
+            }
+            
             $response = $chat
                 ->systemMessage('You are a close, well-educated friend who happens to be an expert in pet care. Respond in a warm, conversational tone while sharing your knowledge. Use casual language and occasional friendly expressions, but maintain accuracy and professionalism in your advice. Share personal insights and experiences when relevant, and always prioritize the pet\'s well-being in your responses.')
                 ->send($request->input('message'));
@@ -37,15 +46,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 throw new \Exception('Received empty response from the assistant');
             }
 
-            return response()->json([
-                'message' => $response,
-                'status' => 'success'
+            return Inertia::render('Chatbot', [
+                'message' => $response
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error processing your request: ' . $e->getMessage(),
-                'status' => 'error'
-            ], 500);
+            return Inertia::render('Chatbot', [
+                'error' => 'Error processing your request: ' . $e->getMessage()
+            ]);
         }
     })->name('chat.message');
 

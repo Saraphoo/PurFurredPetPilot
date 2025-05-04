@@ -1,6 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-    <!-- Regular Meals Section -->
+  <!-- <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <v-card class="mb-6">
       <v-card-title class="text-h6">Regular Meals</v-card-title>
       <v-card-text>
@@ -81,19 +80,16 @@
       </v-card-text>
     </v-card>
 
-      <!-- Daily Meal Log Section -->
-      <v-card class="mb-6">
-          <v-card-title class="text-h6">Daily Meal Log</v-card-title>
-          <v-card-text>
-              <!-- This will be replaced with the DailyMealLog component -->
-              <div class="text-center py-4">
-                  <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
-                  <p class="text-grey mt-2">Daily Meal Log Component will be added here</p>
-              </div>
-          </v-card-text>
-      </v-card>
+    <v-card class="mb-6">
+      <v-card-title class="text-h6">Daily Meal Log</v-card-title>
+      <v-card-text>
+        <div class="text-center py-4">
+          <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
+          <p class="text-grey mt-2">Daily Meal Log Component will be added here</p>
+        </div>
+      </v-card-text>
+    </v-card>
 
-    <!-- General Notes Section -->
     <v-card>
       <v-card-title class="text-h6">General Notes</v-card-title>
       <v-card-text>
@@ -106,7 +102,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- Add save button at the bottom -->
     <div class="mt-6 flex justify-end">
       <v-btn
         type="submit"
@@ -117,16 +112,27 @@
         Save Meal Schedule
       </v-btn>
     </div>
-  </v-form>
+  </v-form> -->
+  <div class="text-center py-8">
+    <v-icon size="64" color="grey">mdi-food</v-icon>
+    <h2 class="text-h4 mt-4">Coming Soon</h2>
+    <p class="text-grey mt-2">Meal tracking functionality is under development</p>
+  </div>
 </template>
 
 <script setup lang="ts">
+/* Commenting out all the existing code
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { VForm } from 'vuetify/components';
+import { withDefaults } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     petId: number;
+    petInfo?: Array<{
+        key: string;
+        value: string;
+    }>;
     initialData?: {
         meals: Array<{
             feed_time: string;
@@ -138,7 +144,13 @@ const props = defineProps<{
         }>;
         notes: string;
     };
-}>();
+}>(), {
+    petInfo: () => [],
+    initialData: () => ({
+        meals: [],
+        notes: ''
+    })
+});
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
@@ -255,6 +267,7 @@ defineExpose({
     meals,
     submitForm
 });
+*/
 </script>
 
 <style scoped>

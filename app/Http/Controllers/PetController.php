@@ -7,6 +7,8 @@ use App\Models\Meal;
 use App\Models\Behavior;
 use App\Models\Housing;
 use App\Models\Activity;
+use App\Models\SpecialNeed;
+use App\Models\Medication;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -75,13 +77,70 @@ class PetController extends Controller
     {
         $pet->load('petInfo');
         
-        // Load initial data for each form
+        // Initialize initialData with all form data
         $initialData = [
-            'medical' => Medical::where('pet_id', $pet->id)->first(),
-            'meals' => Meal::where('pet_id', $pet->id)->first(),
-            'behavior' => Behavior::where('pet_id', $pet->id)->first(),
-            'housing' => Housing::where('pet_id', $pet->id)->first(),
-            'activities' => Activity::where('pet_id', $pet->id)->first(),
+            'medical' => [
+                'special_needs' => SpecialNeed::where('pet_id', $pet->id)->get()->map(function($need) {
+                    return [
+                        'name' => $need->name,
+                        'affects' => $need->affects,
+                        'notes' => $need->notes
+                    ];
+                }),
+                'medications' => Medication::where('pet_id', $pet->id)->get()->map(function($medication) {
+                    return [
+                        'name' => $medication->medication_name,
+                        'prescribed_on' => $medication->prescribed_on,
+                        'notes' => $medication->notes
+                    ];
+                }),
+                'notes' => SpecialNeed::where('pet_id', $pet->id)->value('notes')
+            ],
+            'meals' => [
+                'meals' => Meal::where('pet_id', $pet->id)->get()->map(function($meal) {
+                    return [
+                        'feed_time' => $meal->feed_time,
+                        'food_name' => $meal->food_name,
+                        'brand' => $meal->brand,
+                        'meal_type' => $meal->meal_type,
+                        'serving_value' => $meal->serving_value,
+                        'serving_unit' => $meal->serving_unit
+                    ];
+                }),
+                'notes' => Meal::where('pet_id', $pet->id)->value('notes')
+            ],
+            'behavior' => [
+                'behaviors' => Behavior::where('pet_id', $pet->id)->get()->pluck('name'),
+                'behavior_notes' => Behavior::where('pet_id', $pet->id)->value('behavior_notes'),
+                'general_notes' => Behavior::where('pet_id', $pet->id)->value('general_notes')
+            ],
+            'housing' => [
+                'total_space_value' => Housing::where('pet_id', $pet->id)->value('total_space_value'),
+                'total_space_unit' => Housing::where('pet_id', $pet->id)->value('total_space_unit'),
+                'housing_type' => Housing::where('pet_id', $pet->id)->value('housing_type'),
+                'flooring_type' => Housing::where('pet_id', $pet->id)->value('flooring_type'),
+                'bedding_type' => Housing::where('pet_id', $pet->id)->value('bedding_type'),
+                'accessories' => Housing::where('pet_id', $pet->id)->get()->map(function($housing) {
+                    return [
+                        'type' => $housing->accessory_type,
+                        'name' => $housing->accessory_name,
+                        'size' => $housing->accessory_size,
+                        'brand' => $housing->accessory_brand,
+                        'material' => $housing->accessory_material,
+                        'notes' => $housing->accessory_notes
+                    ];
+                }),
+                'notes' => Housing::where('pet_id', $pet->id)->value('notes')
+            ],
+            'activities' => Activity::where('pet_id', $pet->id)->get()->map(function($activity) {
+                return [
+                    'name' => $activity->activity,
+                    'duration_value' => $activity->duration_value,
+                    'duration_unit' => $activity->duration_unit,
+                    'frequency_value' => $activity->frequency_value,
+                    'frequency_unit' => $activity->frequency_unit
+                ];
+            })
         ];
 
         // Return the Inertia response with the pet's data

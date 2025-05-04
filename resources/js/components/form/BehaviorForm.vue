@@ -1,6 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-    <!-- Regular Behaviors Section -->
+  <!-- <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
     <v-card class="mb-6">
       <v-card-title class="text-h6">Regular Behaviors</v-card-title>
       <v-card-text>
@@ -28,11 +27,9 @@
       </v-card-text>
     </v-card>
 
-    <!-- Daily Behavior Log Section -->
     <v-card class="mb-6">
       <v-card-title class="text-h6">Daily Behavior Log</v-card-title>
       <v-card-text>
-        <!-- This will be replaced with the DailyBehaviorLog component -->
         <div class="text-center py-4">
           <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
           <p class="text-grey mt-2">Daily Behavior Log Component will be added here</p>
@@ -40,7 +37,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- General Notes Section -->
     <v-card>
       <v-card-title class="text-h6">General Notes</v-card-title>
       <v-card-text>
@@ -53,7 +49,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- Add save button at the bottom -->
     <div class="mt-6 flex justify-end">
       <v-btn
         type="submit"
@@ -64,22 +59,40 @@
         Save Behavior Information
       </v-btn>
     </div>
-  </v-form>
+  </v-form> -->
+  <div class="text-center py-8">
+    <v-icon size="64" color="grey">mdi-paw</v-icon>
+    <h2 class="text-h4 mt-4">Coming Soon</h2>
+    <p class="text-grey mt-2">Behavior tracking functionality is under development</p>
+  </div>
 </template>
 
 <script setup lang="ts">
+/* Commenting out all the existing code
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { VForm } from 'vuetify/components';
+import { withDefaults } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     petId: number;
+    petInfo?: Array<{
+        key: string;
+        value: string;
+    }>;
     initialData?: {
         behaviors: string[];
         behavior_notes: string;
         general_notes: string;
     };
-}>();
+}>(), {
+    petInfo: () => [],
+    initialData: () => ({
+        behaviors: [],
+        behavior_notes: '',
+        general_notes: ''
+    })
+});
 
 const valid = ref(false);
 const form = ref<VForm | null>(null);
@@ -151,4 +164,5 @@ defineExpose({
     behaviorNotes,
     submitForm
 });
+*/
 </script>
