@@ -141,79 +141,84 @@
       </template>
     </div>
 
-    <!-- Event Creation Modal -->
-    <div v-if="showEventModal" class="modal">
+    <!-- Add Event Modal -->
+    <div v-if="showAddEventModal" class="modal">
       <div class="modal-content">
-        <h3>Create New Event</h3>
+        <div class="modal-header">
+          <h2 class="text-xl font-semibold">Add New Event</h2>
+          <button @click="closeAddEventModal" class="close-button">
+            <span class="sr-only">Close</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
         <form @submit.prevent="createEvent" class="event-form">
-          <div class="form-group">
-            <label for="event-title">Title</label>
-            <input
-              id="event-title"
-              v-model="newEvent.title"
-              type="text"
-              required
-              placeholder="Event title"
-            >
-          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title">Event Title</label>
+              <input
+                type="text"
+                id="title"
+                v-model="newEvent.title"
+                required
+                placeholder="Enter event title"
+                class="form-input"
+              />
+            </div>
 
-          <div class="form-group">
-            <label for="event-pet">Pet</label>
-            <select
-              id="event-pet"
-              v-model="newEvent.petId"
-              required
-            >
-              <option value="">Select a pet</option>
-              <option
-                v-for="pet in pets"
-                :key="pet.id"
-                :value="pet.id"
+            <div class="form-group">
+              <label for="pet">Pet</label>
+              <select
+                id="pet"
+                v-model="newEvent.pet_id"
+                required
+                class="form-input"
               >
-                {{ pet.name }}
-              </option>
-            </select>
-          </div>
+                <option value="">Select a pet</option>
+                <option v-for="pet in localPets" :key="pet.id" :value="pet.id">
+                  {{ pet.name }}
+                </option>
+              </select>
+            </div>
 
-          <div class="form-group">
-            <label for="event-type">Event Type</label>
-            <select
-              id="event-type"
-              v-model="newEvent.type"
-              required
-            >
-              <option
-                v-for="type in eventTypes"
-                :key="type.value"
-                :value="type.value"
-              >
-                {{ type.label }}
-              </option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input
+                type="date"
+                id="date"
+                v-model="newEvent.date"
+                required
+                class="form-input"
+              />
+            </div>
 
-          <div class="form-group">
-            <label for="event-time">Time</label>
-            <input
-              id="event-time"
-              v-model="newEvent.time"
-              type="time"
-              required
-            >
-          </div>
+            <div class="form-group">
+              <label for="time">Time</label>
+              <input
+                type="time"
+                id="time"
+                v-model="newEvent.time"
+                required
+                class="form-input"
+              />
+            </div>
 
-          <div class="form-group">
-            <label for="event-notes">Notes (optional)</label>
-            <textarea
-              id="event-notes"
-              v-model="newEvent.notes"
-              placeholder="Add any additional notes..."
-              rows="3"
-            ></textarea>
+            <div class="form-group full-width">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                v-model="newEvent.description"
+                rows="3"
+                placeholder="Enter event description"
+                class="form-input"
+              ></textarea>
+            </div>
           </div>
 
           <div class="form-actions">
-            <button type="button" class="btn btn-secondary" @click="showEventModal = false">
+            <button type="button" @click="closeAddEventModal" class="btn btn-secondary">
               Cancel
             </button>
             <button type="submit" class="btn btn-primary">
@@ -224,20 +229,45 @@
       </div>
     </div>
 
-    <!-- Event Modal -->
-    <div v-if="showEventModal" class="modal">
+    <!-- Event Details Modal -->
+    <div v-if="selectedEvent && showEventDetailsModal" class="modal">
       <div class="modal-content">
-        <h3>Event Details</h3>
-        <div v-if="selectedEvent" class="event-details">
-          <p><strong>Title:</strong> {{ selectedEvent.title }}</p>
-          <p><strong>Date:</strong> {{ formatEventDate(selectedEvent.start) }}</p>
-          <p><strong>Time:</strong> {{ formatEventTime(selectedEvent.start) }} - {{ formatEventTime(selectedEvent.end) }}</p>
-          <p><strong>Pet:</strong> {{ selectedEvent.petName }}</p>
-          <p v-if="selectedEvent.description"><strong>Notes:</strong> {{ selectedEvent.description }}</p>
-          <div class="modal-actions">
-            <button class="btn btn-danger" @click="deleteEvent(selectedEvent.id)">Delete</button>
-            <button class="btn btn-secondary" @click="showEventModal = false">Close</button>
+        <div class="modal-header">
+          <h2 class="text-xl font-semibold">{{ selectedEvent.title }}</h2>
+          <button @click="closeEventDetailsModal" class="close-button">
+            <span class="sr-only">Close</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="event-details">
+          <div class="detail-row">
+            <span class="detail-label">Date:</span>
+            <span class="detail-value">{{ formatEventDate(selectedEvent) }}</span>
           </div>
+          <div class="detail-row">
+            <span class="detail-label">Time:</span>
+            <span class="detail-value">{{ formatEventTime(selectedEvent) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Pet:</span>
+            <span class="detail-value">{{ selectedEvent.petName }}</span>
+          </div>
+          <div class="detail-row" v-if="selectedEvent.description">
+            <span class="detail-label">Description:</span>
+            <span class="detail-value">{{ selectedEvent.description }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button @click="deleteEvent(selectedEvent.id)" class="btn btn-danger">
+            Delete Event
+          </button>
+          <button @click="closeEventDetailsModal" class="btn btn-secondary">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -257,20 +287,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-
-// Configure axios defaults
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.withCredentials = true;
+import { router } from '@inertiajs/vue3';
 
 interface Pet {
   id: number;
   name: string;
+  petImage: string | null;
   type: string;
-  breed?: string;
-  age?: number;
-  weight?: number;
-  image?: string;
+  DOB: string;
 }
 
 interface CalendarEvent {
@@ -296,14 +320,22 @@ interface NewEvent {
   title: string;
   date: Date;
   time: string;
-  petId: number;
+  pet_id: number;
+  description: string;
   type: 'feeding' | 'medication' | 'grooming' | 'vet' | 'other';
-  notes: string;
+}
+
+interface PageProps {
+  events: CalendarEvent[];
+  pets: Pet[];
 }
 
 const props = defineProps<{
-  pets: Pet[] | null;
+  events: CalendarEvent[];
+  pets: Pet[];
 }>();
+
+const localPets = ref<Pet[]>(props.pets);
 
 const currentDate = ref(new Date());
 const currentView = ref('month');
@@ -485,14 +517,14 @@ const selectDate = (day: CalendarDay) => {
   console.log('Selected date:', day.date);
 };
 
-const showEventModal = ref(false);
+const showAddEventModal = ref(false);
 const newEvent = ref<NewEvent>({
   title: '',
   date: new Date(),
   time: '09:00',
-  petId: 0,
-  type: 'feeding',
-  notes: ''
+  pet_id: 0,
+  description: '',
+  type: 'feeding'
 });
 
 const eventTypes = [
@@ -523,11 +555,11 @@ const selectTimeSlot = (date: Date, hour: number) => {
     title: '',
     date: new Date(date),
     time: `${hour.toString().padStart(2, '0')}:00`,
-    petId: props.pets?.[0]?.id || 0,
-    type: 'feeding',
-    notes: ''
+    pet_id: props.pets?.[0]?.id || 0,
+    description: '',
+    type: 'feeding'
   };
-  showEventModal.value = true;
+  showAddEventModal.value = true;
 };
 
 const events = ref<CalendarEvent[]>([]);
@@ -535,93 +567,117 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 
 const fetchEvents = async () => {
-  loading.value = true;
-  error.value = null;
   try {
-    const response = await axios.get('/events');
-    events.value = response.data.map((event: any) => ({
-      ...event,
-      start: new Date(event.start),
-      end: new Date(event.end)
-    }));
-  } catch (err) {
-    error.value = 'Failed to load events';
-    console.error('Error loading events:', err);
+    loading.value = true;
+    await router.reload({ 
+      only: ['events'],
+      onSuccess: (page) => {
+        if (page.props.events) {
+          events.value = page.props.events;
+        }
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching events:', error);
+    error.value = 'Failed to load events. Please try again.';
   } finally {
     loading.value = false;
   }
 };
 
-const createEvent = async () => {
-  if (!newEvent.value.title || !newEvent.value.petId) return;
+const fetchPets = async () => {
+  try {
+    await router.reload({ 
+      only: ['pets'],
+      onSuccess: (page) => {
+        console.log('Pets response:', page.props.pets); // Debug log
+        if (page.props.pets) {
+          localPets.value = page.props.pets;
+        }
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching pets:', error);
+  }
+};
 
-  const pet = props.pets?.find(p => p.id === newEvent.value.petId);
+const createEvent = async () => {
+  if (!newEvent.value.title || !newEvent.value.pet_id) return;
+
+  const pet = localPets.value.find(p => p.id === newEvent.value.pet_id);
   if (!pet) return;
 
   try {
     const startTime = new Date(newEvent.value.date);
-    const [hours, minutes] = newEvent.value.time.split(':').map(Number);
-    startTime.setHours(hours, minutes);
+    const [hours, minutes] = newEvent.value.time.split(':');
+    startTime.setHours(parseInt(hours), parseInt(minutes));
 
     const endTime = new Date(startTime);
-    endTime.setHours(hours + 1, minutes);
+    endTime.setHours(endTime.getHours() + 1);
 
-    const response = await axios.post('/events', {
+    await router.post('/events', {
       title: newEvent.value.title,
       start_time: startTime,
       end_time: endTime,
-      description: newEvent.value.notes,
+      description: newEvent.value.description,
       color: getEventColor(newEvent.value.type),
-      pet_id: newEvent.value.petId
+      pet_id: newEvent.value.pet_id
+    }, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: (page) => {
+        if (page.props.event) {
+          events.value = [...events.value, page.props.event];
+        }
+        showAddEventModal.value = false;
+        newEvent.value = {
+          title: '',
+          date: new Date(),
+          time: '09:00',
+          pet_id: 0,
+          description: '',
+          type: 'feeding'
+        };
+      }
     });
-
-    // Add the new event to the calendar
-    events.value.push({
-      id: response.data.id,
-      title: response.data.title,
-      start: new Date(response.data.start_time),
-      end: new Date(response.data.end_time),
-      description: response.data.description,
-      color: response.data.color,
-      petName: pet.name
-    });
-
-    showEventModal.value = false;
-    
-    // Reset the form
-    newEvent.value = {
-      title: '',
-      date: new Date(),
-      time: '09:00',
-      petId: 0,
-      type: 'feeding',
-      notes: ''
-    };
-  } catch (err) {
-    error.value = 'Failed to create event';
-    console.error('Error creating event:', err);
+  } catch (error: unknown) {
+    console.error('Error creating event:', error);
+    error.value = 'Failed to create event. Please try again.';
   }
 };
 
 const deleteEvent = async (eventId: number) => {
   try {
-    await axios.delete(`/events/${eventId}`);
-    events.value = events.value.filter(e => e.id !== eventId);
-    showEventModal.value = false;
-    selectedEvent.value = null;
-  } catch (err) {
-    error.value = 'Failed to delete event';
-    console.error('Error deleting event:', err);
+    await router.delete(`/events/${eventId}`, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        events.value = events.value.filter(e => e.id !== eventId);
+        showEventDetailsModal.value = false;
+        selectedEvent.value = null;
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Error deleting event:', error);
+    error.value = 'Failed to delete event. Please try again.';
   }
 };
 
 onMounted(() => {
   fetchEvents();
+  fetchPets();
 });
+
+const showEventDetailsModal = ref(false);
 
 const selectEvent = (event: CalendarEvent) => {
   selectedEvent.value = event;
-  showEventModal.value = true;
+  showEventDetailsModal.value = true;
+};
+
+const closeEventDetailsModal = () => {
+  showEventDetailsModal.value = false;
+  selectedEvent.value = null;
 };
 
 const formatDate = (date: Date) => {
@@ -662,25 +718,47 @@ const formatHour = (hour: number) => {
          `${hour - 12} PM`;
 };
 
-const formatEventTime = (date: Date) => {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const formatEventDate = (event: CalendarEvent) => {
+  return event.start.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 };
 
-const formatEventDate = (date: Date) => {
-  return date.toLocaleDateString([], { 
-    weekday: 'short', 
-    month: 'short', 
-    day: 'numeric' 
+const formatEventTime = (event: CalendarEvent) => {
+  return event.start.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
   });
+};
+
+const closeAddEventModal = () => {
+  showAddEventModal.value = false;
+  newEvent.value = {
+    title: '',
+    date: new Date(),
+    time: '09:00',
+    pet_id: 0,
+    description: '',
+    type: 'feeding'
+  };
 };
 </script>
 
 <style scoped>
 .calendar {
+  position: relative;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  height: calc(100vh - 200px); /* Adjust based on your layout */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .calendar-header {
@@ -703,21 +781,21 @@ const formatEventDate = (date: Date) => {
 
 .btn {
   padding: 8px 16px;
-  border: 1px solid #e0e0e0;
+  border: none;
   border-radius: 4px;
-  background: white;
   cursor: pointer;
-  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .btn:hover {
-  background: #f5f5f5;
+  opacity: 0.9;
 }
 
 .btn.active {
   background: #2196F3;
   color: white;
-  border-color: #2196F3;
 }
 
 /* Month View Styles */
@@ -781,50 +859,51 @@ const formatEventDate = (date: Date) => {
 
 /* Week View Styles */
 .week-view {
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .week-header {
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
-  background: #f5f5f5;
   border-bottom: 1px solid #e0e0e0;
+  background: #f5f5f5;
 }
 
 .week-day-header {
   padding: 10px;
   text-align: center;
-  font-weight: bold;
-  background: white;
-  border-left: 1px solid #e0e0e0;
+  font-weight: 500;
+  border-right: 1px solid #e0e0e0;
 }
 
-.week-day-header.today {
-  background: #e3f2fd;
-}
-
-.date-number {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
+.week-day-header:last-child {
+  border-right: none;
 }
 
 .week-body {
-  display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
-  height: 600px;
-  overflow-y: auto;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
 }
 
 .time-column {
+  width: 60px;
   background: #f5f5f5;
   border-right: 1px solid #e0e0e0;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .time-slot {
   height: 60px;
-  padding: 4px;
+  padding: 5px;
   border-bottom: 1px solid #e0e0e0;
   font-size: 12px;
   color: #666;
@@ -833,14 +912,16 @@ const formatEventDate = (date: Date) => {
 .week-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  flex: 1;
+  min-width: 0;
 }
 
 .week-day-column {
   border-right: 1px solid #e0e0e0;
 }
 
-.week-day-column.today {
-  background: #e3f2fd;
+.week-day-column:last-child {
+  border-right: none;
 }
 
 /* Day View Styles */
@@ -876,15 +957,15 @@ const formatEventDate = (date: Date) => {
 
 /* Event Styles */
 .event {
-  font-size: 12px;
-  padding: 2px 4px;
-  border-radius: 2px;
+  padding: 4px 8px;
+  border-radius: 4px;
   color: white;
+  font-size: 12px;
+  margin: 2px 0;
+  cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
-  cursor: pointer;
 }
 
 /* Modal Styles */
@@ -898,49 +979,92 @@ const formatEventDate = (date: Date) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 9999;
 }
 
 .modal-content {
   background: white;
-  padding: 24px;
   border-radius: 8px;
-  min-width: 400px;
-  max-width: 500px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.modal-content h3 {
-  margin: 0 0 20px 0;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #666;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #f5f5f5;
   color: #333;
 }
 
-/* Event Form Styles */
+/* Form styles */
 .event-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-group label {
   font-weight: 500;
   color: #333;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
   font-size: 14px;
 }
 
-.form-group textarea {
+.form-input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+textarea.form-input {
   resize: vertical;
   min-height: 80px;
 }
@@ -948,14 +1072,24 @@ const formatEventDate = (date: Date) => {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-primary {
   background: #2196F3;
   color: white;
-  border-color: #2196F3;
 }
 
 .btn-primary:hover {
@@ -965,7 +1099,6 @@ const formatEventDate = (date: Date) => {
 .btn-secondary {
   background: #f5f5f5;
   color: #333;
-  border-color: #e0e0e0;
 }
 
 .btn-secondary:hover {
@@ -983,7 +1116,7 @@ const formatEventDate = (date: Date) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1002;
 }
 
 .loading-spinner {
@@ -1006,12 +1139,32 @@ const formatEventDate = (date: Date) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 1000;
+  z-index: 1003;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.event-details {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #666;
+  width: 100px;
+}
+
+.detail-value {
+  color: #333;
+  flex: 1;
 }
 </style>
 

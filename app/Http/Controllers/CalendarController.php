@@ -3,27 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Event; // You'll need to create this model
+use App\Models\Event;
+use App\Models\Pet;
+use Inertia\Inertia;
 
 class CalendarController extends Controller
 {
+    public function index()
+    {
+        $events = Event::where('user_id', auth()->id())->get();
+        $pets = Pet::where('user_id', auth()->id())
+            ->select('id', 'name', 'type', 'DOB')
+            ->get();
+
+        return Inertia::render('Calendar', [
+            'events' => $events,
+            'pets' => $pets
+        ]);
+    }
+
     public function events()
     {
         try {
-            // For testing, return some dummy events
-            return response()->json([
-                [
-                    'id' => 1,
-                    'title' => 'Test Event',
-                    'start_time' => now(),
-                    'end_time' => now()->addHours(2),
-                    'description' => 'Test Description',
-                    'color' => 'primary'
-                ]
-            ]);
-            
-            // Once you have the Event model set up, you can use:
-            // return Event::where('user_id', auth()->id())->get();
+            $events = Event::where('user_id', auth()->id())->get();
+            return response()->json($events);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

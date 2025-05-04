@@ -14,6 +14,7 @@ use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CalendarController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -26,9 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('pets/Show');
     })->name('pets.show');
 
-    Route::get('/calendar', function () {
-        return Inertia::render('Calendar');
-    })->name('calendar.index');
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
     // Chat routes
     Route::get('/user/pets', [ChatController::class, 'getPets']);
