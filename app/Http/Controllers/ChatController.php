@@ -92,14 +92,10 @@ class ChatController extends Controller
                 
                 // Check if it's an API key issue
                 if (str_contains($e->getMessage(), 'API key')) {
-                    return response()->json([
-                        'error' => 'OpenAI API configuration error. Please check your API key.'
-                    ], 500);
+                    return response()->json(['error' => 'OpenAI API configuration error. Please check your API key.'], 500);
                 }
                 
-                return response()->json([
-                    'error' => 'Error processing your request: ' . $e->getMessage()
-                ], 500);
+                return response()->json(['error' => 'Error processing your request: ' . $e->getMessage()], 500);
             }
         } catch (\Exception $e) {
             Log::error('Chat controller error', [
@@ -107,9 +103,7 @@ class ChatController extends Controller
                 'trace' => $e->getTraceAsString(),
                 'previous' => $e->getPrevious() ? $e->getPrevious()->getMessage() : null
             ]);
-            return response()->json([
-                'error' => 'Error processing your request: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['error' => 'Error processing your request: ' . $e->getMessage()], 500);
         }
     }
 } 

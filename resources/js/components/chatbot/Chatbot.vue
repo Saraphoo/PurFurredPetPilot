@@ -13,46 +13,26 @@ const selectedPetId = ref<number | null>(null);
 
 // Define props for Inertia data
 const props = defineProps<{
-    pets?: Array<{ id: number, name: string }>
+    pets?: Array<{ 
+        id: number; 
+        name: string;
+    }> | null
 }>();
 
 // Initialize userPets with props data
-const userPets = ref<Array<{ id: number, name: string }>>(props.pets || []);
+const userPets = ref<Array<{ id: number, name: string }>>([]);
 
-// Fetch user's pets when component mounts
-const fetchUserPets = async () => {
-    try {
-        console.log('Fetching pets...');
-        const response = await fetch('/api/user/pets', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            credentials: 'same-origin'
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch pets');
-        }
-        
-        const data = await response.json();
-        console.log('Pets data:', data);
-        
-        if (data.pets && Array.isArray(data.pets)) {
-            userPets.value = data.pets;
-            console.log('Updated userPets:', userPets.value);
-        }
-    } catch (error: any) {
-        console.error('Error in fetchUserPets:', error);
+// Watch for changes in props.pets
+watch(() => props.pets, (newPets) => {
+    if (newPets) {
+        userPets.value = newPets.map(pet => ({
+            id: pet.id,
+            name: pet.name
+        }));
+    } else {
+        userPets.value = [];
     }
-};
-
-// Call fetchUserPets when component mounts
-onMounted(() => {
-    fetchUserPets();
-});
+}, { immediate: true });
 
 // Function to scroll to bottom of messages
 const scrollToBottom = () => {
@@ -78,7 +58,7 @@ const sendMessage = async () => {
     isLoading.value = true;
 
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +69,7 @@ const sendMessage = async () => {
             credentials: 'same-origin',
             body: JSON.stringify({
                 message: messageContent,
-                pet_id: selectedPetId.value
+                pet_id: selectedPetId.value || null
             })
         });
 

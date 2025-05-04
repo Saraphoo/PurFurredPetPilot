@@ -41,6 +41,6 @@ defineProps<{
                 <div>No pets to display</div>
             </div>
         </div>
-        <Chatbot/>
+        <Chatbot :pets="pets?.map(pet => ({ id: pet.id, name: pet.name }))"/>
     </AppLayout>
 </template>
