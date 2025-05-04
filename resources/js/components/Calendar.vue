@@ -23,13 +23,13 @@
       <!-- Month View -->
       <template v-if="currentView === 'month'">
         <div class="calendar-weekdays">
-          <div v-for="day in weekDays" :key="day" class="weekday">{{ day }}</div>
+          <div v-for="day in weekDays" :key="day" class="calendar-weekday">{{ day }}</div>
         </div>
         <div class="calendar-days">
           <div 
             v-for="day in calendarDays" 
             :key="day.date.toISOString()"
-            class="day"
+            class="calendar-day"
             :class="{
               'other-month': !day.currentMonth,
               'today': day.isToday,
@@ -805,13 +805,13 @@ const closeAddEventModal = () => {
   gap: 1px;
   background: #f5f5f5;
   border: 1px solid #e0e0e0;
-  border-radius: 4px 4px 0 0;
+  border-bottom: none;
 }
 
-.weekday {
+.calendar-weekday {
   padding: 10px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
   background: white;
 }
 
@@ -821,40 +821,15 @@ const closeAddEventModal = () => {
   gap: 1px;
   background: #f5f5f5;
   border: 1px solid #e0e0e0;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
 }
 
-.day {
-  min-height: 100px;
-  padding: 5px;
+.calendar-day {
+  min-height: 120px;
   background: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.day:hover {
-  background: #f5f5f5;
-}
-
-.day.other-month {
-  color: #bdbdbd;
-}
-
-.day.today {
-  background: #e3f2fd;
-}
-
-.day-number {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.day-events {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  padding: 5px;
+  position: relative;
 }
 
 /* Week View Styles */
