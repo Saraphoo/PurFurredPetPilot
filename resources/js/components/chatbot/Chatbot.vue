@@ -10,6 +10,7 @@ const isLoading = ref(false);
 const isDrawerOpen = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
 const selectedPetId = ref<number | null>(null);
+const chatSessionId = ref<string | null>(null);
 
 // Define props for Inertia data
 const props = defineProps<{
@@ -48,6 +49,13 @@ watch(messages, () => {
     });
 }, { deep: true });
 
+// Function to start a new chat
+const startNewChat = () => {
+    messages.value = [];
+    chatSessionId.value = null;
+    userMessage.value = '';
+};
+
 // Function to send a message to the OpenAI API endpoint
 const sendMessage = async () => {
     if (!userMessage.value.trim()) return;
@@ -69,7 +77,8 @@ const sendMessage = async () => {
             credentials: 'same-origin',
             body: JSON.stringify({
                 message: messageContent,
-                pet_id: selectedPetId.value || null
+                pet_id: selectedPetId.value || null,
+                chat_session_id: chatSessionId.value
             })
         });
 
@@ -81,6 +90,9 @@ const sendMessage = async () => {
 
         if (data.message) {
             messages.value.push({ role: 'assistant', content: data.message });
+            if (data.chat_session_id) {
+                chatSessionId.value = data.chat_session_id;
+            }
         } else {
             throw new Error('No message in response');
         }
@@ -123,7 +135,15 @@ const sendMessage = async () => {
         <div class="p-6 h-full flex flex-col">
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-foreground">Pet Care Assistant</h2>
+                <div class="flex items-center space-x-4">
+                    <h2 class="text-2xl font-semibold text-foreground">Pet Care Assistant</h2>
+                    <button
+                        @click="startNewChat"
+                        class="px-3 py-1 text-sm bg-[#2EC4B6] text-white rounded-lg hover:bg-[#2EC4B6]/90 transition-colors"
+                    >
+                        New Chat
+                    </button>
+                </div>
                 <button
                     @click="isDrawerOpen = false"
                     class="p-2 rounded-full hover:bg-[#2EC4B6]/10 transition-colors text-[#2EC4B6]"

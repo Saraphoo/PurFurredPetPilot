@@ -7,6 +7,8 @@ use App\Models\Pet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Models\ChatSession;
+use Illuminate\Support\Str;
 
 class ChatController extends Controller
 {
@@ -44,15 +46,33 @@ class ChatController extends Controller
         try {
             Log::info('Chat request received', [
                 'message' => $request->message,
-                'pet_id' => $request->pet_id
+                'pet_id' => $request->pet_id,
+                'chat_session_id' => $request->chat_session_id
             ]);
 
             $request->validate([
                 'message' => 'required|string',
-                'pet_id' => 'nullable|exists:pets,id'
+                'pet_id' => 'nullable|exists:pets,id',
+                'chat_session_id' => 'nullable|string'
             ]);
 
             Log::info('Request validated successfully');
+
+            // Get or create chat session
+            $chatSession = null;
+            if ($request->chat_session_id) {
+                $chatSession = ChatSession::where('id', $request->chat_session_id)
+                    ->where('user_id', auth()->id())
+                    ->first();
+            }
+            
+            if (!$chatSession) {
+                $chatSession = ChatSession::create([
+                    'user_id' => auth()->id(),
+                    'pet_id' => $request->pet_id,
+                    'title' => 'New Chat ' . now()->format('M d, Y H:i')
+                ]);
+            }
 
             $chat = new Chat();
             
@@ -82,7 +102,21 @@ class ChatController extends Controller
                 Log::info('Attempting to send message to OpenAI');
                 $response = $chat->send($request->message);
                 Log::info('OpenAI response received', ['response' => $response]);
-                return response()->json(['message' => $response]);
+
+                // Store the message in the chat session
+                $chatSession->messages()->create([
+                    'role' => 'user',
+                    'content' => $request->message
+                ]);
+                $chatSession->messages()->create([
+                    'role' => 'assistant',
+                    'content' => $response
+                ]);
+
+                return response()->json([
+                    'message' => $response,
+                    'chat_session_id' => $chatSession->id
+                ]);
             } catch (\Exception $e) {
                 Log::error('Chat error', [
                     'message' => $e->getMessage(),
