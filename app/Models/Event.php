@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {
@@ -15,7 +16,8 @@ class Event extends Model
         'end_time',
         'description',
         'color',
-        'user_id'
+        'user_id',
+        'pet_id'
     ];
 
     protected $casts = [
@@ -23,8 +25,18 @@ class Event extends Model
         'end_time' => 'datetime',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pet(): BelongsTo
+    {
+        return $this->belongsTo(Pet::class);
+    }
+
+    public function authorize(User $user): bool
+    {
+        return $this->user_id === $user->id;
     }
 } 
