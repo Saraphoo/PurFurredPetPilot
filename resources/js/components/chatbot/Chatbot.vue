@@ -75,6 +75,7 @@ const sendMessage = async () => {
     const messageContent = userMessage.value;
     userMessage.value = '';
     messages.value.push({ role: 'user', content: messageContent });
+    isLoading.value = true;
 
     try {
         const response = await fetch('/api/chat', {
@@ -109,6 +110,8 @@ const sendMessage = async () => {
             role: 'assistant', 
             content: error.message || 'Sorry, I encountered an error. Please try again.' 
         });
+    } finally {
+        isLoading.value = false;
     }
 };
 </script>
@@ -176,6 +179,13 @@ const sendMessage = async () => {
                         {{ message.content }}
                     </div>
                 </div>
+                <!-- Loading Indicator -->
+                <div v-if="isLoading" class="mb-4">
+                    <div class="p-3 rounded-lg max-w-[85%] bg-muted text-black flex items-center space-x-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-[#2EC4B6] border-t-transparent"></div>
+                        <span>Thinking...</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Input Area -->
@@ -186,6 +196,7 @@ const sendMessage = async () => {
                     rows="3"
                     placeholder="Ask about pet care..."
                     @keyup.enter.exact.prevent="sendMessage(); userMessage = ''"
+                    :disabled="isLoading"
                 ></textarea>
 
                 <Button
@@ -193,7 +204,11 @@ const sendMessage = async () => {
                     :disabled="isLoading || !userMessage.trim()"
                     @click="sendMessage"
                 >
-                    {{ isLoading ? 'Sending...' : 'Send Message' }}
+                    <span v-if="isLoading" class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Sending...
+                    </span>
+                    <span v-else>Send Message</span>
                 </Button>
             </div>
         </div>
