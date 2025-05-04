@@ -92,19 +92,22 @@ const sendMessage = async () => {
             })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Failed to send message');
+            throw new Error(data.error || 'Failed to send message');
         }
 
-        const data = await response.json();
         if (data.message) {
             messages.value.push({ role: 'assistant', content: data.message });
+        } else {
+            throw new Error('No message in response');
         }
     } catch (error: any) {
         console.error('Error in sendMessage:', error);
         messages.value.push({ 
             role: 'assistant', 
-            content: 'Sorry, I encountered an error. Please try again.' 
+            content: error.message || 'Sorry, I encountered an error. Please try again.' 
         });
     }
 };

@@ -48,28 +48,81 @@ class Chat
 
     public function send(string $message): ?string
     {
-        $this->messages[] = [
-            'role' => 'user',
-            'content' => $message,
-        ];
+        try {
+            $this->messages[] = [
+                'role' => 'user',
+                'content' => $message,
+            ];
 
-        $response = Http::withToken(config('services.openai.secret'))
-            ->post('https://api.openai.com/v1/chat/completions', [
-                "model" => "gpt-4o-mini-search-preview",
+            $apiKey = config('services.openai.secret');
+            \Log::info('OpenAI Configuration', [
+                'api_key_exists' => !empty($apiKey),
+                'api_key_length' => strlen($apiKey),
+                'api_key_prefix' => substr($apiKey, 0, 7) . '...'
+            ]);
+
+            \Log::info('Sending message to OpenAI', [
+                'messages' => $this->messages,
+                'endpoint' => 'https://api.openai.com/v1/chat/completions'
+            ]);
+
+            $requestData = [
+                "model" => "gpt-3.5-turbo",
                 "messages" => $this->messages,
                 "max_tokens" => 500,
-            ])->json('choices.0.message.content');
+                "temperature" => 0.7,
+            ];
 
-        if($response){
+            \Log::info('Request data', ['data' => $requestData]);
+
+            $response = Http::withToken($apiKey)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ])
+                ->post('https://api.openai.com/v1/chat/completions', $requestData);
+
+            \Log::info('OpenAI response received', [
+                'status' => $response->status(),
+                'body' => $response->json(),
+                'raw_body' => $response->body(),
+                'headers' => $response->headers()
+            ]);
+
+            if (!$response->successful()) {
+                \Log::error('OpenAI API error', [
+                    'status' => $response->status(),
+                    'body' => $response->json(),
+                    'raw_body' => $response->body(),
+                    'headers' => $response->headers()
+                ]);
+                throw new \Exception('OpenAI API request failed: ' . $response->body());
+            }
+
+            $content = $response->json('choices.0.message.content');
+
+            if (!$content) {
+                \Log::error('No content in OpenAI response', [
+                    'response' => $response->json(),
+                    'raw_body' => $response->body()
+                ]);
+                throw new \Exception('No content in OpenAI response');
+            }
+
             $this->messages[] = [
                 'role' => 'assistant',
-                'content' => $response,
+                'content' => $content,
             ];
             
-            return $response;
+            return $content;
+        } catch (\Exception $e) {
+            \Log::error('Error in Chat::send', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'previous' => $e->getPrevious() ? $e->getPrevious()->getMessage() : null
+            ]);
+            throw $e;
         }
-
-        return null;
     }
 
     public function messages()

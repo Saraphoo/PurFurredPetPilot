@@ -28,33 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('pets.show');
 
     Route::get('/api/user/pets', [ChatController::class, 'getPets']);
-    Route::post('/api/chat', function (Request $request) {
-        try {
-            $chat = new \App\AI\Chat();
-            
-            // Set pet context if a pet is selected
-            if ($request->pet_id) {
-                $pet = \App\Models\Pet::with('petInfo')->find($request->pet_id);
-                $chat->setPetContext($pet);
-            }
-            
-            $response = $chat
-                ->systemMessage('You are a close, well-educated friend who happens to be an expert in pet care. Respond in a warm, conversational tone while sharing your knowledge. Use casual language and occasional friendly expressions, but maintain accuracy and professionalism in your advice. Share personal insights and experiences when relevant, and always prioritize the pet\'s well-being in your responses.')
-                ->send($request->input('message'));
-
-            if (empty($response)) {
-                throw new \Exception('Received empty response from the assistant');
-            }
-
-            return Inertia::render('Chatbot', [
-                'message' => $response
-            ]);
-        } catch (\Exception $e) {
-            return Inertia::render('Chatbot', [
-                'error' => 'Error processing your request: ' . $e->getMessage()
-            ]);
-        }
-    })->name('chat.message');
+    Route::post('/api/chat', [ChatController::class, 'chat'])->name('chat.message');
 
     // Google Calendar Routes
     Route::get('/calendar/connect', [GoogleCalendarController::class, 'connect'])->name('calendar.connect');
