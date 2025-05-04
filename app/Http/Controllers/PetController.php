@@ -52,7 +52,7 @@ class PetController extends Controller
         ]);
 
         // Create a new pet
-        $pet = Pet::query()->create([
+        $pet = Pet::create([
             'name' => request('name'),
             'DOB' => request('DOB'),
             'type' => request('type'),
@@ -64,11 +64,8 @@ class PetController extends Controller
             'weight' => request('weight'),
             'height' => request('height'),
             'length' => request('length'),
+            'user_id' => Auth::id()
         ]);
-
-        $pet->users()->attach(Auth::id());
-
-
 
         // Redirect to the dashboard
         return to_route('dashboard')->with('success', 'Pet created.');

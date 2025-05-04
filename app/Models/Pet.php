@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -20,12 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $length
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  */
 class Pet extends Model
 {
-
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -38,7 +39,19 @@ class Pet extends Model
         'type',
         'species',
         'sex',
+        'breed',
+        'neutered',
+        'color',
+        'weight',
+        'height',
+        'length',
+        'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function users(): BelongsToMany
     {

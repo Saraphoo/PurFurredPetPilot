@@ -49,8 +49,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function pets(): BelongsToMany
+    public function pets()
     {
-        return $this->belongsToMany(Pet::class, 'pet_user');
+        return $this->hasMany(Pet::class);
     }
 }

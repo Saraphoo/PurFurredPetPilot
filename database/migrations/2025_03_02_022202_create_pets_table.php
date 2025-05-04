@@ -24,7 +24,9 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
             $table->string('length')->nullable();
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
