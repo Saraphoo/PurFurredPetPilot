@@ -12,7 +12,7 @@
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Laravel 9.x
+- **Backend**: Laravel 12.x
 - **Frontend**: Tailwind CSS, Vite
 - **Containerization**: Laravel Sail (Docker)
 - **Database**: MySQL
