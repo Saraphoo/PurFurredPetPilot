@@ -20,7 +20,7 @@ class BehaviorControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -128,5 +128,17 @@ class BehaviorControllerTest extends TestCase
 
         $response->assertNotFound();
         $this->assertDatabaseCount('daily_behaviors', 0);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_behavior_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('behaviors.store', ['pet' => $this->pet->id]), [
+                'behaviors' => ['Biting'],
+            ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('behaviors', ['pet_id' => $this->pet->id]);
     }
 }

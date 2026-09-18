@@ -11,6 +11,7 @@ use App\Models\SpecialNeed;
 use App\Models\Medication;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 class PetController extends Controller
 {
@@ -20,7 +21,7 @@ class PetController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Retrieve pets associated with the user
+        // Retrieve pets this user is a caretaker of, in any role
         $pets = $user->pets;
 
         // Pass the pets to the Inertia view
@@ -34,10 +35,9 @@ class PetController extends Controller
         return Inertia::render('pets/Create');
     }
 
-    public function store(): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        // Validate the request
-        request()->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'DOB' => 'required|date',
             'sex' => 'required|string|max:255',
@@ -51,21 +51,8 @@ class PetController extends Controller
             'length' => 'nullable|string|max:255',
         ]);
 
-        // Create a new pet
-        $pet = Pet::create([
-            'name' => request('name'),
-            'DOB' => request('DOB'),
-            'type' => request('type'),
-            'sex' => request('sex'),
-            'species' => request('species'),
-            'breed' => request('breed'),
-            'neutered' => request('neutered'),
-            'color' => request('color'),
-            'weight' => request('weight'),
-            'height' => request('height'),
-            'length' => request('length'),
-            'user_id' => Auth::id()
-        ]);
+        $pet = Pet::create($validated);
+        $pet->users()->attach(Auth::id(), ['role' => Pet::ROLE_OWNER]);
 
         // Redirect to the dashboard
         return to_route('dashboard')->with('success', 'Pet created.');
@@ -73,6 +60,8 @@ class PetController extends Controller
 
     public function show(Pet $pet)
     {
+        $this->authorize('view', $pet);
+
         $pet->load('petInfo');
         
         // Initialize initialData with all form data
@@ -151,6 +140,8 @@ class PetController extends Controller
 
     public function storePetInfo(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $request->validate([
             'key' => 'required|string|max:255',
             'value' => 'required|string|max:255',
@@ -163,6 +154,38 @@ class PetController extends Controller
         );
 
         return back()->with('success', 'Pet information saved.');
+    }
+
+    public function update(Request $request, Pet $pet): RedirectResponse
+    {
+        $this->authorize('update', $pet);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'DOB' => 'required|date',
+            'sex' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'species' => 'nullable|string|max:255',
+            'breed' => 'nullable|string|max:255',
+            'neutered' => 'nullable|boolean',
+            'color' => 'nullable|string|max:255',
+            'weight' => 'nullable|string|max:255',
+            'height' => 'nullable|string|max:255',
+            'length' => 'nullable|string|max:255',
+        ]);
+
+        $pet->update($validated);
+
+        return back()->with('success', 'Pet updated.');
+    }
+
+    public function destroy(Pet $pet): RedirectResponse
+    {
+        $this->authorize('delete', $pet);
+
+        $pet->delete();
+
+        return to_route('dashboard')->with('success', 'Pet deleted.');
     }
 
 }

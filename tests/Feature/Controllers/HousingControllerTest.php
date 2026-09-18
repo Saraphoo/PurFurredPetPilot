@@ -20,7 +20,7 @@ class HousingControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -165,5 +165,22 @@ class HousingControllerTest extends TestCase
         $response->assertSessionHas('success');
 
         $this->assertDatabaseMissing('housings', ['id' => $housing->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_housing_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('housing.store', ['pet' => $this->pet->id]), [
+                'total_space_value' => '100',
+                'total_space_unit' => 'square feet',
+                'housing_type' => 'Cage',
+                'flooring_type' => 'Wire',
+                'bedding_type' => 'Wood Shavings',
+                'accessories' => [],
+            ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('housings', ['pet_id' => $this->pet->id]);
     }
 }

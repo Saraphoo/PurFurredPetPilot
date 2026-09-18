@@ -21,7 +21,7 @@ class ChatControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -106,5 +106,30 @@ class ChatControllerTest extends TestCase
 
         $response->assertStatus(500);
         $response->assertJsonStructure(['error']);
+    }
+
+    /** @test */
+    public function it_only_lists_pets_the_user_is_a_caretaker_of()
+    {
+        $otherUser = User::factory()->create();
+        Pet::factory()->ownedBy($otherUser)->create();
+
+        $response = $this->actingAs($this->user)->getJson('/user/pets');
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'pets');
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_chat_about_the_pet()
+    {
+        Http::fake();
+
+        $response = $this->actingAs(User::factory()->create())->postJson('/chat', [
+            'message' => 'Tell me about this pet',
+            'pet_id' => $this->pet->id,
+        ]);
+
+        $response->assertForbidden();
     }
 }

@@ -24,7 +24,7 @@ class CalendarControllerTest extends TestCase
     public function it_shows_the_authenticated_users_events_and_pets()
     {
         $user = User::factory()->create();
-        $pet = Pet::factory()->create(['user_id' => $user->id]);
+        $pet = Pet::factory()->ownedBy($user)->create();
         Event::create([
             'user_id' => $user->id,
             'pet_id' => $pet->id,

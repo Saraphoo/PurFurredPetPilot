@@ -15,15 +15,11 @@ class ChatController extends Controller
     {
         try {
             $user = auth()->user();
-            
-            // Get all pets for this user, either owned or shared
-            $pets = Pet::where('user_id', $user->id)
-                ->orWhereHas('users', function($query) use ($user) {
-                    $query->where('users.id', $user->id);
-                })
-                ->select('id', 'name')
-                ->get();
-                
+
+            // Get all pets this user is a caretaker of, in any role
+            $pets = $user->pets()->get(['pets.id', 'pets.name']);
+
+
             if ($request->wantsJson()) {
                 return response()->json(['pets' => $pets]);
             }
@@ -48,6 +44,12 @@ class ChatController extends Controller
             'chat_session_id' => 'nullable|string'
         ]);
 
+        $pet = null;
+        if ($request->pet_id) {
+            $pet = Pet::with('petInfo')->findOrFail($request->pet_id);
+            $this->authorize('caretake', $pet);
+        }
+
         try {
             // Get or create chat session
             $chatSession = null;
@@ -56,7 +58,7 @@ class ChatController extends Controller
                     ->where('user_id', auth()->id())
                     ->first();
             }
-            
+
             if (!$chatSession) {
                 $chatSession = ChatSession::create([
                     'user_id' => auth()->id(),
@@ -67,12 +69,7 @@ class ChatController extends Controller
 
             $chat = new Chat();
 
-            // Set pet context if a pet is selected
-            if ($request->pet_id) {
-                $pet = Pet::with('petInfo')->find($request->pet_id);
-                if (!$pet) {
-                    return response()->json(['error' => 'Pet not found'], 404);
-                }
+            if ($pet) {
                 $chat->setPetContext($pet);
             }
 

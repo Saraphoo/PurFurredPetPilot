@@ -20,14 +20,14 @@ class EventControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
     public function it_lists_only_the_authenticated_users_events()
     {
         $otherUser = User::factory()->create();
-        $otherPet = Pet::factory()->create(['user_id' => $otherUser->id]);
+        $otherPet = Pet::factory()->ownedBy($otherUser)->create();
 
         Event::create([
             'user_id' => $this->user->id,
@@ -73,6 +73,21 @@ class EventControllerTest extends TestCase
             'pet_id' => $this->pet->id,
             'title' => 'Vet visit',
         ]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_of_the_pet_cannot_create_an_event_for_it()
+    {
+        $response = $this->actingAs(User::factory()->create())->postJson('/events', [
+            'title' => 'Vet visit',
+            'start_time' => '2024-01-01 09:00:00',
+            'end_time' => '2024-01-01 10:00:00',
+            'color' => 'primary',
+            'pet_id' => $this->pet->id,
+        ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('events', ['pet_id' => $this->pet->id]);
     }
 
     /** @test */

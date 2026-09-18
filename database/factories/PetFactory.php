@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Pet;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PetFactory extends Factory
@@ -24,5 +25,25 @@ class PetFactory extends Factory
             'sex' => $this->faker->randomElement(['M', 'F']),
             'species' => $this->faker->word(),
         ];
+    }
+
+    /**
+     * Attach the given user as this pet's owner once it's created.
+     */
+    public function ownedBy(User $user): static
+    {
+        return $this->afterCreating(function (Pet $pet) use ($user) {
+            $pet->users()->attach($user->id, ['role' => Pet::ROLE_OWNER]);
+        });
+    }
+
+    /**
+     * Attach the given user as a (non-owner) caretaker once it's created.
+     */
+    public function caretakenBy(User $user): static
+    {
+        return $this->afterCreating(function (Pet $pet) use ($user) {
+            $pet->users()->attach($user->id, ['role' => Pet::ROLE_CARETAKER]);
+        });
     }
 }

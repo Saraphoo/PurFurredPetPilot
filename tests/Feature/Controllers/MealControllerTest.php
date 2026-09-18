@@ -20,7 +20,7 @@ class MealControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -149,5 +149,21 @@ class MealControllerTest extends TestCase
             ->post(route('meals.log', ['pet' => $this->pet->id]), []);
 
         $response->assertSessionHasErrors(['meal_id', 'fed_at', 'portions_fed']);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_a_meal()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('meals.store', ['pet' => $this->pet->id]), [
+                'feed_time' => '08:00',
+                'name' => 'Chicken & Rice',
+                'brand' => 'Royal Canin',
+                'meal_type' => 'Dry Kibble',
+                'portion_size' => '1 cup',
+            ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('meals', ['pet_id' => $this->pet->id]);
     }
 }

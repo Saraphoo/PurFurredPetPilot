@@ -21,7 +21,7 @@ class MedicalControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -153,5 +153,17 @@ class MedicalControllerTest extends TestCase
             ->post(route('medical.log', ['pet' => $this->pet->id]), []);
 
         $response->assertSessionHasErrors(['medication_id', 'given_at', 'dosage_given']);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_medical_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('medical.store', ['pet' => $this->pet->id]), [
+                'special_needs' => [],
+                'medications' => [],
+            ]);
+
+        $response->assertForbidden();
     }
 }

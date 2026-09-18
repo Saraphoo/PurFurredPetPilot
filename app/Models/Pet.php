@@ -28,6 +28,9 @@ class Pet extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const ROLE_OWNER = 'owner';
+    public const ROLE_CARETAKER = 'caretaker';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -45,18 +48,36 @@ class Pet extends Model
         'weight',
         'height',
         'length',
-        'user_id'
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
+    /**
+     * All caretakers (any role) associated with this pet.
+     */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'pet_user');
+        return $this->belongsToMany(User::class, 'pet_user')
+            ->withPivot('role')
+            ->withTimestamps();
     }
+
+    /**
+     * Caretakers with the "owner" role.
+     */
+    public function owners(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', self::ROLE_OWNER);
+    }
+
+    public function isOwnedBy(User $user): bool
+    {
+        return $this->owners()->where('users.id', $user->id)->exists();
+    }
+
+    public function hasCaretaker(User $user): bool
+    {
+        return $this->users()->where('users.id', $user->id)->exists();
+    }
+
     protected function casts(): array
     {
         return [
@@ -64,7 +85,6 @@ class Pet extends Model
         ];
     }
 
-    // In your Pet model
     public function petInfo()
     {
         return $this->hasOne(PetInfo::class);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Pet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,6 +38,8 @@ class EventController extends Controller
             'pet_id' => 'required|exists:pets,id',
         ]);
 
+        $this->authorize('caretake', Pet::findOrFail($validated['pet_id']));
+
         $event = Event::create([
             'title' => $validated['title'],
             'start_time' => $validated['start_time'],
@@ -62,6 +65,8 @@ class EventController extends Controller
             'color' => 'required|string',
             'pet_id' => 'required|exists:pets,id',
         ]);
+
+        $this->authorize('caretake', Pet::findOrFail($validated['pet_id']));
 
         $event->update($validated);
 

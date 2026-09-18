@@ -9,15 +9,17 @@ use Illuminate\Http\Request;
 
 class BehaviorController extends Controller
 {
-    public function store(Request $request, $pet)
+    public function store(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'behaviors' => 'required|array',
             'behavior_notes' => 'nullable|string',
             'general_notes' => 'nullable|string'
         ]);
 
-        $validated['pet_id'] = $pet;
+        $validated['pet_id'] = $pet->id;
         Behavior::create($validated);
 
         return redirect()->back()->with('success', 'Behavior information created successfully');
@@ -25,6 +27,8 @@ class BehaviorController extends Controller
 
     public function update(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'behaviors' => 'required|array',
             'behaviors.*' => 'required|string|max:255',
@@ -40,6 +44,8 @@ class BehaviorController extends Controller
 
     public function logDailyBehavior(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'occurred_at' => 'required|date',
             'notes' => 'nullable|string'

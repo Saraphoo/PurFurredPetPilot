@@ -20,7 +20,7 @@ class MedicationControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -99,5 +99,17 @@ class MedicationControllerTest extends TestCase
         $response->assertSessionHas('success');
 
         $this->assertDatabaseMissing('medications', ['id' => $medication->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_a_medication()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('medications.store', ['pet' => $this->pet->id]), [
+                'name' => 'Apoquel',
+            ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('medications', ['pet_id' => $this->pet->id]);
     }
 }

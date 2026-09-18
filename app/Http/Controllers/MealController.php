@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Meal;
 use App\Models\DailyMeal;
+use App\Models\Pet;
 use Illuminate\Http\Request;
 
 class MealController extends Controller
 {
-    public function store(Request $request, $pet)
+    public function store(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'feed_time' => 'required|date_format:H:i',
             'name' => 'required|string|max:255',
@@ -19,14 +22,16 @@ class MealController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $validated['pet_id'] = $pet;
+        $validated['pet_id'] = $pet->id;
         $meal = Meal::create($validated);
 
         return redirect()->back()->with('success', 'Meal schedule created successfully');
     }
 
-    public function update(Request $request, $pet, Meal $meal)
+    public function update(Request $request, Pet $pet, Meal $meal)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'feed_time' => 'required|date_format:H:i',
             'name' => 'required|string|max:255',
@@ -41,14 +46,18 @@ class MealController extends Controller
         return redirect()->back()->with('success', 'Meal schedule updated successfully');
     }
 
-    public function destroy($pet, Meal $meal)
+    public function destroy(Pet $pet, Meal $meal)
     {
+        $this->authorize('caretake', $pet);
+
         $meal->delete();
         return redirect()->back()->with('success', 'Meal schedule deleted successfully');
     }
 
-    public function logDailyMeal(Request $request)
+    public function logDailyMeal(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'meal_id' => 'required|exists:meals,id',
             'fed_at' => 'required|date',

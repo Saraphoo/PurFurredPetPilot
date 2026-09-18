@@ -12,6 +12,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\PetCaretakerController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -66,6 +67,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
     Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
     Route::post('/pets/store', [PetController::class, 'store'])->name('pets.store');
+    Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
+    Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
+    Route::post('/pets/{pet}/info', [PetController::class, 'storePetInfo'])->name('pets.info.store');
+
+    // Caretaker routes
+    Route::get('/pets/{pet}/caretakers', [PetCaretakerController::class, 'index'])->name('caretakers.index');
+    Route::post('/pets/{pet}/caretakers', [PetCaretakerController::class, 'store'])->name('caretakers.store');
+    Route::put('/pets/{pet}/caretakers/{user}', [PetCaretakerController::class, 'update'])->name('caretakers.update');
+    Route::delete('/pets/{pet}/caretakers/{user}', [PetCaretakerController::class, 'destroy'])->name('caretakers.destroy');
 });
 
 require __DIR__.'/settings.php';

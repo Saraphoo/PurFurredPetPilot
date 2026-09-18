@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Housing;
+use App\Models\Pet;
 use Illuminate\Http\Request;
 
 class HousingController extends Controller
 {
-    public function store(Request $request, $pet)
+    public function store(Request $request, Pet $pet)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'total_space_value' => 'required|numeric',
             'total_space_unit' => 'required|string|max:50',
@@ -19,7 +22,7 @@ class HousingController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $validated['pet_id'] = $pet;
+        $validated['pet_id'] = $pet->id;
         $housing = Housing::create($validated);
 
         // Handle accessories if provided
@@ -39,8 +42,10 @@ class HousingController extends Controller
         return redirect()->back()->with('success', 'Housing information created successfully');
     }
 
-    public function update(Request $request, $pet, Housing $housing)
+    public function update(Request $request, Pet $pet, Housing $housing)
     {
+        $this->authorize('caretake', $pet);
+
         $validated = $request->validate([
             'total_space_value' => 'required|numeric',
             'total_space_unit' => 'required|string|max:50',
@@ -70,10 +75,12 @@ class HousingController extends Controller
         return redirect()->back()->with('success', 'Housing information updated successfully');
     }
 
-    public function destroy($pet, Housing $housing)
+    public function destroy(Pet $pet, Housing $housing)
     {
+        $this->authorize('caretake', $pet);
+
         $housing->accessories()->delete();
         $housing->delete();
         return redirect()->back()->with('success', 'Housing information deleted successfully');
     }
-} 
+}

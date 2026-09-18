@@ -20,7 +20,7 @@ class ActivityControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -100,5 +100,33 @@ class ActivityControllerTest extends TestCase
 
         $response->assertOk();
         $this->assertSoftDeleted('activities', ['id' => $activity->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_list_activities()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('activities.index', ['pet' => $this->pet->id]));
+
+        $response->assertForbidden();
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_delete_an_activity()
+    {
+        $activity = Activity::create([
+            'pet_id' => $this->pet->id,
+            'activity' => 'Walking',
+            'duration_value' => 30,
+            'duration_unit' => 'minutes',
+            'frequency_value' => 1,
+            'frequency_unit' => 'day',
+        ]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->deleteJson(route('activities.destroy', ['activity' => $activity->id]));
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('activities', ['id' => $activity->id, 'deleted_at' => null]);
     }
 }
