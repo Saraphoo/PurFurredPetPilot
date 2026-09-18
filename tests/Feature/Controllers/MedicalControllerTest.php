@@ -25,6 +25,20 @@ class MedicalControllerTest extends TestCase
     }
 
     /** @test */
+    public function it_lists_special_needs_and_medications_for_a_pet()
+    {
+        SpecialNeed::create(['pet_id' => $this->pet->id, 'name' => 'Diabetes', 'affects' => 'Diet']);
+        Medication::create(['pet_id' => $this->pet->id, 'name' => 'Insulin']);
+
+        $response = $this->actingAs($this->user)
+            ->getJson(route('medical.index', ['pet' => $this->pet->id]));
+
+        $response->assertOk();
+        $response->assertJsonFragment(['name' => 'Diabetes']);
+        $response->assertJsonFragment(['name' => 'Insulin']);
+    }
+
+    /** @test */
     public function it_can_store_medical_information()
     {
         $specialNeeds = [
@@ -44,14 +58,12 @@ class MedicalControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->post(route('medical.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('medical.store', ['pet' => $this->pet->id]), [
                 'special_needs' => $specialNeeds,
                 'medications' => $medications,
-                'notes' => 'General medical notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseHas('special_needs', [
             'pet_id' => $this->pet->id,
@@ -72,9 +84,10 @@ class MedicalControllerTest extends TestCase
     public function it_validates_required_fields_when_storing()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('medical.store', ['pet' => $this->pet->id]), []);
+            ->postJson(route('medical.store', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors(['special_needs', 'medications']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['special_needs', 'medications']);
     }
 
     /** @test */
@@ -96,14 +109,12 @@ class MedicalControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->put(route('medical.update', ['pet' => $this->pet->id]), [
+            ->putJson(route('medical.update', ['pet' => $this->pet->id]), [
                 'special_needs' => $newSpecialNeeds,
                 'medications' => [],
-                'notes' => 'Updated notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseMissing('special_needs', [
             'pet_id' => $this->pet->id,
@@ -129,15 +140,14 @@ class MedicalControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->post(route('medical.log', ['pet' => $this->pet->id]), [
+            ->postJson(route('medical.log', ['pet' => $this->pet->id]), [
                 'medication_id' => $medication->id,
                 'given_at' => '2024-01-01 08:00:00',
                 'dosage_given' => 1,
                 'notes' => 'Administered as prescribed'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseHas('daily_medications', [
             'medication_id' => $medication->id,
@@ -150,19 +160,29 @@ class MedicalControllerTest extends TestCase
     public function it_validates_required_fields_when_logging_daily_medication()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('medical.log', ['pet' => $this->pet->id]), []);
+            ->postJson(route('medical.log', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors(['medication_id', 'given_at', 'dosage_given']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['medication_id', 'given_at', 'dosage_given']);
     }
 
     /** @test */
     public function a_user_who_is_not_a_caretaker_cannot_store_medical_information()
     {
         $response = $this->actingAs(User::factory()->create())
-            ->post(route('medical.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('medical.store', ['pet' => $this->pet->id]), [
                 'special_needs' => [],
                 'medications' => [],
             ]);
+
+        $response->assertForbidden();
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_view_medical_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('medical.index', ['pet' => $this->pet->id]));
 
         $response->assertForbidden();
     }

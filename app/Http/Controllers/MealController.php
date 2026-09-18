@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class MealController extends Controller
 {
+    public function index(Pet $pet)
+    {
+        $this->authorize('caretake', $pet);
+
+        return response()->json($pet->meals()->get());
+    }
+
     public function store(Request $request, Pet $pet)
     {
         $this->authorize('caretake', $pet);
@@ -25,7 +32,7 @@ class MealController extends Controller
         $validated['pet_id'] = $pet->id;
         $meal = Meal::create($validated);
 
-        return redirect()->back()->with('success', 'Meal schedule created successfully');
+        return response()->json($meal, 201);
     }
 
     public function update(Request $request, Pet $pet, Meal $meal)
@@ -43,7 +50,7 @@ class MealController extends Controller
 
         $meal->update($validated);
 
-        return redirect()->back()->with('success', 'Meal schedule updated successfully');
+        return response()->json($meal);
     }
 
     public function destroy(Pet $pet, Meal $meal)
@@ -51,7 +58,8 @@ class MealController extends Controller
         $this->authorize('caretake', $pet);
 
         $meal->delete();
-        return redirect()->back()->with('success', 'Meal schedule deleted successfully');
+
+        return response()->json(['message' => 'Meal schedule deleted successfully']);
     }
 
     public function logDailyMeal(Request $request, Pet $pet)
@@ -67,6 +75,6 @@ class MealController extends Controller
 
         DailyMeal::create($validated);
 
-        return redirect()->back()->with('success', 'Daily meal logged successfully');
+        return response()->json(['message' => 'Daily meal logged successfully']);
     }
 }

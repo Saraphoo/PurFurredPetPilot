@@ -10,6 +10,16 @@ use Illuminate\Http\Request;
 
 class MedicalController extends Controller
 {
+    public function index(Pet $pet)
+    {
+        $this->authorize('caretake', $pet);
+
+        return response()->json([
+            'special_needs' => $pet->specialNeeds()->get(),
+            'medications' => $pet->medications()->get(),
+        ]);
+    }
+
     public function store(Request $request, Pet $pet)
     {
         $this->authorize('caretake', $pet);
@@ -23,7 +33,6 @@ class MedicalController extends Controller
             'medications.*.name' => 'required|string|max:255',
             'medications.*.prescribed_on' => 'required|date',
             'medications.*.notes' => 'nullable|string',
-            'notes' => 'nullable|string'
         ]);
 
         // Delete existing records
@@ -46,7 +55,10 @@ class MedicalController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Medical information saved successfully');
+        return response()->json([
+            'special_needs' => $pet->specialNeeds()->get(),
+            'medications' => $pet->medications()->get(),
+        ]);
     }
 
     public function update(Request $request, Pet $pet)
@@ -68,6 +80,6 @@ class MedicalController extends Controller
 
         DailyMedication::create($validated);
 
-        return redirect()->back()->with('success', 'Daily medication logged successfully');
+        return response()->json(['message' => 'Daily medication logged successfully']);
     }
 }

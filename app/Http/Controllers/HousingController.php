@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class HousingController extends Controller
 {
+    public function index(Pet $pet)
+    {
+        $this->authorize('caretake', $pet);
+
+        return response()->json($pet->housing()->with('accessories')->get());
+    }
+
     public function store(Request $request, Pet $pet)
     {
         $this->authorize('caretake', $pet);
@@ -39,7 +46,7 @@ class HousingController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Housing information created successfully');
+        return response()->json($housing->load('accessories'), 201);
     }
 
     public function update(Request $request, Pet $pet, Housing $housing)
@@ -52,6 +59,7 @@ class HousingController extends Controller
             'housing_type' => 'required|string|max:255',
             'flooring_type' => 'required|string|max:255',
             'bedding_type' => 'required|string|max:255',
+            'accessories' => 'required|array',
             'notes' => 'nullable|string'
         ]);
 
@@ -72,7 +80,7 @@ class HousingController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Housing information updated successfully');
+        return response()->json($housing->load('accessories'));
     }
 
     public function destroy(Pet $pet, Housing $housing)
@@ -81,6 +89,7 @@ class HousingController extends Controller
 
         $housing->accessories()->delete();
         $housing->delete();
-        return redirect()->back()->with('success', 'Housing information deleted successfully');
+
+        return response()->json(['message' => 'Housing information deleted successfully']);
     }
 }

@@ -34,22 +34,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
 
     // Meal routes
+    Route::get('/pets/{pet}/meals', [MealController::class, 'index'])->name('meals.index');
     Route::post('/pets/{pet}/meals', [MealController::class, 'store'])->name('meals.store');
     Route::put('/pets/{pet}/meals/{meal}', [MealController::class, 'update'])->name('meals.update');
     Route::delete('/pets/{pet}/meals/{meal}', [MealController::class, 'destroy'])->name('meals.destroy');
     Route::post('/pets/{pet}/meals/log', [MealController::class, 'logDailyMeal'])->name('meals.log');
 
     // Housing routes
+    Route::get('/pets/{pet}/housing', [HousingController::class, 'index'])->name('housing.index');
     Route::post('/pets/{pet}/housing', [HousingController::class, 'store'])->name('housing.store');
     Route::put('/pets/{pet}/housing/{housing}', [HousingController::class, 'update'])->name('housing.update');
     Route::delete('/pets/{pet}/housing/{housing}', [HousingController::class, 'destroy'])->name('housing.destroy');
 
     // Medical routes
+    Route::get('/pets/{pet}/medical', [MedicalController::class, 'index'])->name('medical.index');
     Route::post('/pets/{pet}/medical', [MedicalController::class, 'store'])->name('medical.store');
     Route::put('/pets/{pet}/medical', [MedicalController::class, 'update'])->name('medical.update');
     Route::post('/pets/{pet}/medical/log', [MedicalController::class, 'logDailyMedication'])->name('medical.log');
 
     // Behavior routes
+    Route::get('/pets/{pet}/behaviors', [BehaviorController::class, 'index'])->name('behaviors.index');
     Route::post('/pets/{pet}/behaviors', [BehaviorController::class, 'store'])->name('behaviors.store');
     Route::put('/pets/{pet}/behaviors', [BehaviorController::class, 'update'])->name('behaviors.update');
     Route::post('/pets/{pet}/behaviors/log', [BehaviorController::class, 'logDailyBehavior'])->name('behaviors.log');

@@ -29,12 +29,6 @@ const props = defineProps<{
         DOB: string | null;
     };
     petInfo: Array<PetInfoItem>;
-    initialData: {
-        medical: any;
-        meals: any;
-        behavior: any;
-        housing: any;
-    };
 }>();
 
 
@@ -112,26 +106,6 @@ const currentForm = computed(() => {
   }
 });
 
-// Add computed property for initial data
-const currentFormInitialData = computed(() => {
-  switch (selectedForm.value) {
-    case 'medical':
-      return {
-        special_needs: props.initialData.medical?.special_needs || [],
-        medications: props.initialData.medical?.medications || [],
-        notes: props.initialData.medical?.notes || ''
-      };
-    case 'meals':
-      return props.initialData.meals;
-    case 'behavior':
-      return props.initialData.behavior;
-    case 'housing':
-      return props.initialData.housing;
-    default:
-      return null;
-  }
-});
-
 </script>
 
 <template>
@@ -179,7 +153,6 @@ const currentFormInitialData = computed(() => {
         <component
             :is="currentForm"
             :pet-id="pet.id"
-            :initial-data="currentFormInitialData"
         />
 
     </div>

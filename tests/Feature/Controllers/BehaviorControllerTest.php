@@ -24,17 +24,42 @@ class BehaviorControllerTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_null_when_no_behavior_record_exists()
+    {
+        $response = $this->actingAs($this->user)
+            ->getJson(route('behaviors.index', ['pet' => $this->pet->id]));
+
+        $response->assertOk();
+        $this->assertEmpty($response->json());
+    }
+
+    /** @test */
+    public function it_returns_the_existing_behavior_record()
+    {
+        Behavior::create([
+            'pet_id' => $this->pet->id,
+            'behaviors' => ['Barking'],
+            'behavior_notes' => 'Notes',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson(route('behaviors.index', ['pet' => $this->pet->id]));
+
+        $response->assertOk();
+        $response->assertJsonFragment(['behavior_notes' => 'Notes']);
+    }
+
+    /** @test */
     public function it_can_store_behavior_information()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('behaviors.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('behaviors.store', ['pet' => $this->pet->id]), [
                 'behaviors' => ['Biting', 'Kicking', 'Spinning'],
                 'behavior_notes' => 'Behavior notes',
                 'general_notes' => 'General notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertCreated();
 
         $this->assertDatabaseHas('behaviors', [
             'pet_id' => $this->pet->id,
@@ -50,9 +75,10 @@ class BehaviorControllerTest extends TestCase
     public function it_validates_required_fields_when_storing()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('behaviors.store', ['pet' => $this->pet->id]), []);
+            ->postJson(route('behaviors.store', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors(['behaviors']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['behaviors']);
     }
 
     /** @test */
@@ -66,14 +92,13 @@ class BehaviorControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->put(route('behaviors.update', ['pet' => $this->pet->id]), [
+            ->putJson(route('behaviors.update', ['pet' => $this->pet->id]), [
                 'behaviors' => ['New Behavior 1', 'New Behavior 2'],
                 'behavior_notes' => 'New behavior notes',
                 'general_notes' => 'New general notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseMissing('behaviors', [
             'pet_id' => $this->pet->id,
@@ -90,9 +115,10 @@ class BehaviorControllerTest extends TestCase
     public function it_validates_required_fields_when_updating()
     {
         $response = $this->actingAs($this->user)
-            ->put(route('behaviors.update', ['pet' => $this->pet->id]), []);
+            ->putJson(route('behaviors.update', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors(['behaviors']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['behaviors']);
     }
 
     /** @test */
@@ -104,13 +130,12 @@ class BehaviorControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->post(route('behaviors.log', ['pet' => $this->pet->id]), [
+            ->postJson(route('behaviors.log', ['pet' => $this->pet->id]), [
                 'occurred_at' => '2024-01-01 08:00:00',
                 'notes' => 'Barked at the mail carrier'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseHas('daily_behaviors', [
             'behavior_id' => $behavior->id,
@@ -122,7 +147,7 @@ class BehaviorControllerTest extends TestCase
     public function it_requires_a_behavior_record_to_exist_before_logging()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('behaviors.log', ['pet' => $this->pet->id]), [
+            ->postJson(route('behaviors.log', ['pet' => $this->pet->id]), [
                 'occurred_at' => '2024-01-01 08:00:00',
             ]);
 
@@ -134,11 +159,20 @@ class BehaviorControllerTest extends TestCase
     public function a_user_who_is_not_a_caretaker_cannot_store_behavior_information()
     {
         $response = $this->actingAs(User::factory()->create())
-            ->post(route('behaviors.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('behaviors.store', ['pet' => $this->pet->id]), [
                 'behaviors' => ['Biting'],
             ]);
 
         $response->assertForbidden();
         $this->assertDatabaseMissing('behaviors', ['pet_id' => $this->pet->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_view_behavior_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('behaviors.index', ['pet' => $this->pet->id]));
+
+        $response->assertForbidden();
     }
 }

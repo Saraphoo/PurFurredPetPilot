@@ -24,6 +24,34 @@ class HousingControllerTest extends TestCase
     }
 
     /** @test */
+    public function it_lists_housing_entries_with_accessories()
+    {
+        $housing = Housing::create([
+            'pet_id' => $this->pet->id,
+            'total_space_value' => '50',
+            'total_space_unit' => 'square feet',
+            'housing_type' => 'Cage',
+            'flooring_type' => 'Wire',
+            'bedding_type' => 'Wood Shavings',
+        ]);
+        $housing->accessories()->create([
+            'accessory_type' => 'House',
+            'name' => 'Cozy Cave',
+            'accessory_size' => 'Large',
+            'brand' => 'Kaytee',
+            'material' => 'Plastic',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson(route('housing.index', ['pet' => $this->pet->id]));
+
+        $response->assertOk();
+        $response->assertJsonCount(1);
+        $response->assertJsonFragment(['housing_type' => 'Cage']);
+        $response->assertJsonFragment(['name' => 'Cozy Cave']);
+    }
+
+    /** @test */
     public function it_can_store_housing_information()
     {
         $accessories = [
@@ -38,7 +66,7 @@ class HousingControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->post(route('housing.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('housing.store', ['pet' => $this->pet->id]), [
                 'total_space_value' => '100',
                 'total_space_unit' => 'square feet',
                 'housing_type' => 'Cage',
@@ -48,8 +76,7 @@ class HousingControllerTest extends TestCase
                 'notes' => 'General housing notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertCreated();
 
         $this->assertDatabaseHas('housings', [
             'pet_id' => $this->pet->id,
@@ -75,9 +102,10 @@ class HousingControllerTest extends TestCase
     public function it_validates_required_fields_when_storing()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('housing.store', ['pet' => $this->pet->id]), []);
+            ->postJson(route('housing.store', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors([
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
             'total_space_value',
             'total_space_unit',
             'housing_type',
@@ -112,7 +140,7 @@ class HousingControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->put(route('housing.update', ['pet' => $this->pet->id, 'housing' => $housing->id]), [
+            ->putJson(route('housing.update', ['pet' => $this->pet->id, 'housing' => $housing->id]), [
                 'total_space_value' => '200',
                 'total_space_unit' => 'square feet',
                 'housing_type' => 'New Type',
@@ -122,8 +150,7 @@ class HousingControllerTest extends TestCase
                 'notes' => 'Updated notes'
             ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseHas('housings', [
             'id' => $housing->id,
@@ -159,10 +186,9 @@ class HousingControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->delete(route('housing.destroy', ['pet' => $this->pet->id, 'housing' => $housing->id]));
+            ->deleteJson(route('housing.destroy', ['pet' => $this->pet->id, 'housing' => $housing->id]));
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertOk();
 
         $this->assertDatabaseMissing('housings', ['id' => $housing->id]);
     }
@@ -171,7 +197,7 @@ class HousingControllerTest extends TestCase
     public function a_user_who_is_not_a_caretaker_cannot_store_housing_information()
     {
         $response = $this->actingAs(User::factory()->create())
-            ->post(route('housing.store', ['pet' => $this->pet->id]), [
+            ->postJson(route('housing.store', ['pet' => $this->pet->id]), [
                 'total_space_value' => '100',
                 'total_space_unit' => 'square feet',
                 'housing_type' => 'Cage',
@@ -182,5 +208,14 @@ class HousingControllerTest extends TestCase
 
         $response->assertForbidden();
         $this->assertDatabaseMissing('housings', ['pet_id' => $this->pet->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_list_housing_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('housing.index', ['pet' => $this->pet->id]));
+
+        $response->assertForbidden();
     }
 }

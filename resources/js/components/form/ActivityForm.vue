@@ -86,7 +86,7 @@ import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import axios from 'axios';
 import { CalendarDays, Trash2 } from 'lucide-vue-next';
-import { onMounted, ref, withDefaults } from 'vue';
+import { onMounted, ref } from 'vue';
 
 interface Activity {
     id?: number;
@@ -97,27 +97,14 @@ interface Activity {
     frequency_unit: string;
 }
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
     petId: number;
-    petInfo?: Array<{
-        key: string;
-        value: string;
-    }>;
-    initialData?: Array<{
-        name: string;
-        duration_value: string;
-        duration_unit: string;
-        frequency_value: string;
-        frequency_unit: string;
-    }>;
-}>(), {
-    petInfo: () => []
-});
+}>();
 
 const form = ref<HTMLFormElement | null>(null);
 
 // Form data
-const activities = ref<Activity[]>(props.initialData || [{
+const activities = ref<Activity[]>([{
     name: '',
     duration_value: '',
     duration_unit: '',

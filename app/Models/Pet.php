@@ -105,4 +105,24 @@ class Pet extends Model
         return $this->hasManyThrough(DailyActivity::class, Activity::class);
     }
 
+    public function meals()
+    {
+        return $this->hasMany(Meal::class);
+    }
+
+    public function housing()
+    {
+        return $this->hasMany(Housing::class);
+    }
+
+    public function specialNeeds()
+    {
+        return $this->hasMany(SpecialNeed::class);
+    }
+
+    public function medications()
+    {
+        return $this->hasMany(Medication::class);
+    }
+
 }
