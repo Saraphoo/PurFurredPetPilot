@@ -9,6 +9,8 @@ class DailyMeal extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'meal_id',
         'fed_at',

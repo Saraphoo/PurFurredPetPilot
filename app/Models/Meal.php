@@ -9,13 +9,16 @@ class Meal extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'pet_id',
         'brand',
         'meal_type',
         'name',
         'portion_size',
-        'feed_time'
+        'feed_time',
+        'notes'
     ];
 
     public function pet()

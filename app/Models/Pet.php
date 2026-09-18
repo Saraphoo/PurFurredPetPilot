@@ -75,6 +75,11 @@ class Pet extends Model
         return $this->hasMany(Activity::class);
     }
 
+    public function behaviors()
+    {
+        return $this->hasMany(Behavior::class);
+    }
+
     public function dailyActivities()
     {
         return $this->hasManyThrough(DailyActivity::class, Activity::class);

@@ -6,18 +6,17 @@ use App\Models\SpecialNeed;
 use App\Models\Medication;
 use App\Models\DailyMedication;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class MedicalController extends Controller
 {
     public function store(Request $request, $pet)
     {
         $validated = $request->validate([
-            'special_needs' => 'required|array',
+            'special_needs' => 'present|array',
             'special_needs.*.name' => 'required|string|max:255',
             'special_needs.*.affects' => 'required|string|max:255',
             'special_needs.*.notes' => 'nullable|string',
-            'medications' => 'required|array',
+            'medications' => 'present|array',
             'medications.*.name' => 'required|string|max:255',
             'medications.*.prescribed_on' => 'required|date',
             'medications.*.notes' => 'nullable|string',
@@ -36,12 +35,11 @@ class MedicalController extends Controller
 
         // Create medications
         foreach ($validated['medications'] as $medication) {
-            $medication['pet_id'] = $pet;
             Medication::create([
                 'pet_id' => $pet,
-                'medication_name' => $medication['name'],
+                'name' => $medication['name'],
                 'prescribed_on' => $medication['prescribed_on'],
-                'notes' => $medication['notes']
+                'notes' => $medication['notes'] ?? null
             ]);
         }
 
@@ -57,8 +55,9 @@ class MedicalController extends Controller
     {
         $validated = $request->validate([
             'medication_id' => 'required|exists:medications,id',
-            'date' => 'required|date',
-            'was_given' => 'required|boolean',
+            'given_at' => 'required|date',
+            'dosage_given' => 'required|integer|min:0',
+            'reason_given' => 'nullable|string|max:255',
             'notes' => 'nullable|string'
         ]);
 

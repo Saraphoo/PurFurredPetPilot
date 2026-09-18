@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Housing;
-use App\Models\HousingAccessory;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class HousingController extends Controller
 {
@@ -30,7 +28,7 @@ class HousingController extends Controller
                 $housing->accessories()->create([
                     'accessory_type' => $accessory['type'],
                     'name' => $accessory['name'],
-                    'size' => $accessory['size'],
+                    'accessory_size' => $accessory['size'],
                     'brand' => $accessory['brand'],
                     'material' => $accessory['material'],
                     'notes' => $accessory['notes'] ?? null
@@ -41,7 +39,7 @@ class HousingController extends Controller
         return redirect()->back()->with('success', 'Housing information created successfully');
     }
 
-    public function update(Request $request, Housing $housing)
+    public function update(Request $request, $pet, Housing $housing)
     {
         $validated = $request->validate([
             'total_space_value' => 'required|numeric',
@@ -61,7 +59,7 @@ class HousingController extends Controller
                 $housing->accessories()->create([
                     'accessory_type' => $accessory['type'],
                     'name' => $accessory['name'],
-                    'size' => $accessory['size'],
+                    'accessory_size' => $accessory['size'],
                     'brand' => $accessory['brand'],
                     'material' => $accessory['material'],
                     'notes' => $accessory['notes'] ?? null
@@ -72,7 +70,7 @@ class HousingController extends Controller
         return redirect()->back()->with('success', 'Housing information updated successfully');
     }
 
-    public function destroy(Housing $housing)
+    public function destroy($pet, Housing $housing)
     {
         $housing->accessories()->delete();
         $housing->delete();

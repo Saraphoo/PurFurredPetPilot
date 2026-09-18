@@ -9,7 +9,6 @@ use App\Models\Housing;
 use App\Models\Activity;
 use App\Models\SpecialNeed;
 use App\Models\Medication;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +22,6 @@ class PetController extends Controller
 
         // Retrieve pets associated with the user
         $pets = $user->pets;
-        Log::info($pets);
 
         // Pass the pets to the Inertia view
         return Inertia::render('Dashboard', [

@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SpecialNeed extends Model
+class DailyMedication extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
     protected $fillable = [
-        'pet_id',
-        'name',
-        'affects',
-        'severity',
-        'diagnosed_on',
+        'medication_id',
+        'given_at',
+        'dosage_given',
+        'reason_given',
         'notes'
     ];
 
-    public function pet()
+    public function medication()
     {
-        return $this->belongsTo(Pet::class);
+        return $this->belongsTo(Medication::class);
     }
-} 
+}

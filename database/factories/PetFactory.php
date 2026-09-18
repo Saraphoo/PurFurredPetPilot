@@ -18,10 +18,11 @@ class PetFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->firstName(), // Generate a random pet name
-            'DOB' => $this->faker->date(),       // Generate a random date of birth
-            'type' => $this->faker->randomElement(['Dog', 'Cat', 'Bird', 'Fish']), // Random pet type
-            'species' => $this->faker->word(),   // Random species/breed
+            'name' => $this->faker->firstName(),
+            'DOB' => $this->faker->date(),
+            'type' => $this->faker->randomElement(['Dog', 'Cat', 'Bird', 'Fish']),
+            'sex' => $this->faker->randomElement(['M', 'F']),
+            'species' => $this->faker->word(),
         ];
     }
 }

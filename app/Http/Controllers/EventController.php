@@ -41,8 +41,9 @@ class EventController extends Controller
             'title' => $validated['title'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'color' => $validated['color'],
+            'pet_id' => $validated['pet_id'],
             'user_id' => Auth::id(),
         ]);
 

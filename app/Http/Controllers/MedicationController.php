@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Medication;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class MedicationController extends Controller
 {
     public function store(Request $request, $pet)
     {
         $validated = $request->validate([
-            'medication_name' => 'required|string|max:255',
-            'dosage' => 'required|string|max:255',
-            'frequency' => 'required|string|max:255',
-            'time_of_day' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-            'prescribing_vet' => 'nullable|string|max:255',
-            'pharmacy' => 'nullable|string|max:255',
-            'refill_date' => 'nullable|date',
-            'expiration_date' => 'nullable|date'
+            'name' => 'required|string|max:255',
+            'medication_type' => 'nullable|string|max:255',
+            'dosage' => 'nullable|string|max:255',
+            'prescribed_on' => 'nullable|string|max:255',
+            'frequency_value' => 'nullable|integer',
+            'frequency_unit' => 'nullable|string|max:255',
+            'notes' => 'nullable|string'
         ]);
 
         $validated['pet_id'] = $pet;
@@ -28,18 +25,16 @@ class MedicationController extends Controller
         return redirect()->back()->with('success', 'Medication information created successfully');
     }
 
-    public function update(Request $request, Medication $medication)
+    public function update(Request $request, $pet, Medication $medication)
     {
         $validated = $request->validate([
-            'medication_name' => 'required|string|max:255',
-            'dosage' => 'required|string|max:255',
-            'frequency' => 'required|string|max:255',
-            'time_of_day' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-            'prescribing_vet' => 'nullable|string|max:255',
-            'pharmacy' => 'nullable|string|max:255',
-            'refill_date' => 'nullable|date',
-            'expiration_date' => 'nullable|date'
+            'name' => 'required|string|max:255',
+            'medication_type' => 'nullable|string|max:255',
+            'dosage' => 'nullable|string|max:255',
+            'prescribed_on' => 'nullable|string|max:255',
+            'frequency_value' => 'nullable|integer',
+            'frequency_unit' => 'nullable|string|max:255',
+            'notes' => 'nullable|string'
         ]);
 
         $medication->update($validated);
@@ -47,9 +42,9 @@ class MedicationController extends Controller
         return redirect()->back()->with('success', 'Medication updated successfully');
     }
 
-    public function destroy(Medication $medication)
+    public function destroy($pet, Medication $medication)
     {
         $medication->delete();
         return redirect()->back()->with('success', 'Medication deleted successfully');
     }
-} 
+}

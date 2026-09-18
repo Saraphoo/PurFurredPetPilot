@@ -42,13 +42,13 @@ class ChatController extends Controller
 
     public function chat(Request $request)
     {
-        try {
-            $request->validate([
-                'message' => 'required|string',
-                'pet_id' => 'nullable|exists:pets,id',
-                'chat_session_id' => 'nullable|string'
-            ]);
+        $request->validate([
+            'message' => 'required|string',
+            'pet_id' => 'nullable|exists:pets,id',
+            'chat_session_id' => 'nullable|string'
+        ]);
 
+        try {
             // Get or create chat session
             $chatSession = null;
             if ($request->chat_session_id) {

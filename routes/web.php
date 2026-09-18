@@ -56,8 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Activity routes
     Route::get('/pets/{pet}/activities', [ActivityController::class, 'index'])->name('activities.index');
     Route::post('/pets/{pet}/activities', [ActivityController::class, 'store'])->name('activities.store');
-    Route::put('/pets/{pet}/activities', [ActivityController::class, 'update'])->name('activities.update');
-    Route::post('/pets/{pet}/activities/log', [ActivityController::class, 'logDailyActivity'])->name('activities.log');
+    Route::delete('/activities/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
 
     // Medication routes
     Route::post('/pets/{pet}/medications', [MedicationController::class, 'store'])->name('medications.store');
