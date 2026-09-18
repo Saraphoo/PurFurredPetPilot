@@ -1,11 +1,8 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PetController;
-use OpenAI\Laravel\Facades\OpenAI;
-use Illuminate\Http\Request;
 use App\Http\Controllers\MealController;
 use App\Http\Controllers\HousingController;
 use App\Http\Controllers\MedicalController;
@@ -23,10 +20,6 @@ Route::get('/', function () {
 Route::get('dashboard', [PetController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/pets/show', function () {
-        return Inertia::render('pets/Show');
-    })->name('pets.show');
-
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
     // Chat routes
@@ -70,17 +63,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/pets/{pet}/medications', [MedicationController::class, 'store'])->name('medications.store');
     Route::put('/pets/{pet}/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
     Route::delete('/pets/{pet}/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
-});
 
-Route::get('/users/{user}', function (User $user) {
-    return $user->email;
+    Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
+    Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
+    Route::post('/pets/store', [PetController::class, 'store'])->name('pets.store');
 });
-
-Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
-Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
-Route::post('/pets/store', [PetController::class, 'store'])->middleware(['auth'])->name('pets.store');
-Route::put('/pets/show', [PetController::class, 'update']);
-Route::delete('/pets/show', [PetController::class, 'destroy']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
