@@ -5,13 +5,19 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         DB::statement('DROP EXTENSION IF EXISTS vector');
     }
-}; 
+};
