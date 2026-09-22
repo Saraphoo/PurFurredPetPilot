@@ -8,6 +8,7 @@
 - Additional features for the future:
 	- Chat bot agent
 		- specialized layer and harnessing to control bot output
+        - JEV Typesafe ai https://typesafe.ai/blog/introducing-system-one-models-and-jev
 	- Pet finance tracker
 		- pet saving tracker
 		- pet cost tracker (vet, food, board, toys, etc.)
