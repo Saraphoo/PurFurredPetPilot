@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Event;
-use App\Models\Pet;
 use Inertia\Inertia;
 
 class CalendarController extends Controller
@@ -12,9 +10,7 @@ class CalendarController extends Controller
     public function index()
     {
         $events = Event::where('user_id', auth()->id())->get();
-        $pets = Pet::where('user_id', auth()->id())
-            ->select('id', 'name', 'type', 'DOB')
-            ->get();
+        $pets = auth()->user()->pets()->get(['pets.id', 'pets.name', 'pets.type', 'pets.DOB']);
 
         return Inertia::render('Calendar', [
             'events' => $events,

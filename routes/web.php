@@ -1,11 +1,8 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PetController;
-use OpenAI\Laravel\Facades\OpenAI;
-use Illuminate\Http\Request;
 use App\Http\Controllers\MealController;
 use App\Http\Controllers\HousingController;
 use App\Http\Controllers\MedicalController;
@@ -15,6 +12,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\PetCaretakerController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -23,10 +21,6 @@ Route::get('/', function () {
 Route::get('dashboard', [PetController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/pets/show', function () {
-        return Inertia::render('pets/Show');
-    })->name('pets.show');
-
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
     // Chat routes
@@ -63,24 +57,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Activity routes
     Route::get('/pets/{pet}/activities', [ActivityController::class, 'index'])->name('activities.index');
     Route::post('/pets/{pet}/activities', [ActivityController::class, 'store'])->name('activities.store');
-    Route::put('/pets/{pet}/activities', [ActivityController::class, 'update'])->name('activities.update');
-    Route::post('/pets/{pet}/activities/log', [ActivityController::class, 'logDailyActivity'])->name('activities.log');
+    Route::delete('/activities/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
 
     // Medication routes
     Route::post('/pets/{pet}/medications', [MedicationController::class, 'store'])->name('medications.store');
     Route::put('/pets/{pet}/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
     Route::delete('/pets/{pet}/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
-});
 
-Route::get('/users/{user}', function (User $user) {
-    return $user->email;
-});
+    Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
+    Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
+    Route::post('/pets/store', [PetController::class, 'store'])->name('pets.store');
+    Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
+    Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
+    Route::post('/pets/{pet}/info', [PetController::class, 'storePetInfo'])->name('pets.info.store');
 
-Route::get('/pets/show/{pet}', [PetController::class, 'show'])->name('pet.show');
-Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
-Route::post('/pets/store', [PetController::class, 'store'])->middleware(['auth'])->name('pets.store');
-Route::put('/pets/show', [PetController::class, 'update']);
-Route::delete('/pets/show', [PetController::class, 'destroy']);
+    // Caretaker routes
+    Route::get('/pets/{pet}/caretakers', [PetCaretakerController::class, 'index'])->name('caretakers.index');
+    Route::post('/pets/{pet}/caretakers', [PetCaretakerController::class, 'store'])->name('caretakers.store');
+    Route::put('/pets/{pet}/caretakers/{user}', [PetCaretakerController::class, 'update'])->name('caretakers.update');
+    Route::delete('/pets/{pet}/caretakers/{user}', [PetCaretakerController::class, 'destroy'])->name('caretakers.destroy');
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

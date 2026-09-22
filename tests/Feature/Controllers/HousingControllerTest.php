@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Controllers;
 
-use App\Models\Pet;
 use App\Models\Housing;
-use App\Models\HousingAccessory;
+use App\Models\Pet;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,9 +18,9 @@ class HousingControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -52,10 +51,9 @@ class HousingControllerTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        // Assert housing was created
         $this->assertDatabaseHas('housings', [
             'pet_id' => $this->pet->id,
-            'total_space_value' => '100',
+            'total_space_value' => 100,
             'total_space_unit' => 'square feet',
             'housing_type' => 'Cage',
             'flooring_type' => 'Wire',
@@ -63,15 +61,13 @@ class HousingControllerTest extends TestCase
             'notes' => 'General housing notes'
         ]);
 
-        // Assert accessory was created
         $this->assertDatabaseHas('housing_accessories', [
-            'pet_id' => $this->pet->id,
             'accessory_type' => 'House',
-            'accessory_name' => 'Cozy Cave',
+            'name' => 'Cozy Cave',
             'accessory_size' => 'Large',
-            'accessory_brand' => 'Kaytee',
-            'accessory_material' => 'Plastic',
-            'accessory_notes' => 'Main sleeping area'
+            'brand' => 'Kaytee',
+            'material' => 'Plastic',
+            'notes' => 'Main sleeping area'
         ]);
     }
 
@@ -86,15 +82,15 @@ class HousingControllerTest extends TestCase
             'total_space_unit',
             'housing_type',
             'flooring_type',
-            'bedding_type'
+            'bedding_type',
+            'accessories'
         ]);
     }
 
     /** @test */
     public function it_can_update_housing_information()
     {
-        // Create initial data
-        Housing::create([
+        $housing = Housing::create([
             'pet_id' => $this->pet->id,
             'total_space_value' => '50',
             'total_space_unit' => 'square feet',
@@ -116,7 +112,7 @@ class HousingControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->put(route('housing.update', ['pet' => $this->pet->id]), [
+            ->put(route('housing.update', ['pet' => $this->pet->id, 'housing' => $housing->id]), [
                 'total_space_value' => '200',
                 'total_space_unit' => 'square feet',
                 'housing_type' => 'New Type',
@@ -129,10 +125,9 @@ class HousingControllerTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        // Assert old data was updated
         $this->assertDatabaseHas('housings', [
-            'pet_id' => $this->pet->id,
-            'total_space_value' => '200',
+            'id' => $housing->id,
+            'total_space_value' => 200,
             'total_space_unit' => 'square feet',
             'housing_type' => 'New Type',
             'flooring_type' => 'New Flooring',
@@ -140,15 +135,52 @@ class HousingControllerTest extends TestCase
             'notes' => 'Updated notes'
         ]);
 
-        // Assert new accessory was created
         $this->assertDatabaseHas('housing_accessories', [
-            'pet_id' => $this->pet->id,
+            'housing_id' => $housing->id,
             'accessory_type' => 'Bed',
-            'accessory_name' => 'New Bed',
+            'name' => 'New Bed',
             'accessory_size' => 'Medium',
-            'accessory_brand' => 'New Brand',
-            'accessory_material' => 'New Material',
-            'accessory_notes' => 'New notes'
+            'brand' => 'New Brand',
+            'material' => 'New Material',
+            'notes' => 'New notes'
         ]);
     }
-} 
+
+    /** @test */
+    public function it_can_delete_housing_information()
+    {
+        $housing = Housing::create([
+            'pet_id' => $this->pet->id,
+            'total_space_value' => '50',
+            'total_space_unit' => 'square feet',
+            'housing_type' => 'Cage',
+            'flooring_type' => 'Wire',
+            'bedding_type' => 'Wood Shavings',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->delete(route('housing.destroy', ['pet' => $this->pet->id, 'housing' => $housing->id]));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('housings', ['id' => $housing->id]);
+    }
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_housing_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('housing.store', ['pet' => $this->pet->id]), [
+                'total_space_value' => '100',
+                'total_space_unit' => 'square feet',
+                'housing_type' => 'Cage',
+                'flooring_type' => 'Wire',
+                'bedding_type' => 'Wood Shavings',
+                'accessories' => [],
+            ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('housings', ['pet_id' => $this->pet->id]);
+    }
+}

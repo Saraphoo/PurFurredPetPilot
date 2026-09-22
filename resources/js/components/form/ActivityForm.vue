@@ -1,123 +1,92 @@
 <template>
-  <v-form ref="form" v-model="valid">
+  <form ref="form" @submit.prevent="submitForm">
     <!-- Regular Activities Section -->
-    <v-card class="mb-6">
-      <v-card-title class="text-h6">Regular Activities</v-card-title>
-      <v-card-text>
-        <v-row v-for="(activity, index) in activities" :key="index" class="mb-4">
-          <v-col cols="3">
-            <v-autocomplete
-              v-model="activity.name"
-              :items="activityOptions"
-              label="Activity Name"
-              :rules="[v => !!v || 'Activity name is required']"
-              required
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="2">
-            <v-text-field
-              v-model="activity.duration_value"
-              label="Duration Value"
-              type="number"
-              :rules="[v => !!v || 'Duration value is required']"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-              v-model="activity.duration_unit"
-              :items="durationUnits"
-              label="Duration Unit"
-              :rules="[v => !!v || 'Duration unit is required']"
-              required
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-text-field
-              v-model="activity.frequency_value"
-              label="Frequency Value"
-              type="number"
-              :rules="[v => !!v || 'Frequency value is required']"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-              v-model="activity.frequency_unit"
-              :items="frequencyUnits"
-              label="Frequency Unit"
-              :rules="[v => !!v || 'Frequency unit is required']"
-              required
-            ></v-select>
-          </v-col>
-          <v-col cols="1" class="text-right">
-            <v-btn
-              v-if="activities.length > 1"
-              color="error"
-              icon
-              @click="removeActivity(index)"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
+    <Card class="mb-6">
+      <CardHeader>
+        <CardTitle>Regular Activities</CardTitle>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div v-for="(activity, index) in activities" :key="index" class="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-end">
+          <div class="grid gap-2 md:col-span-3">
+            <Label :for="`activity-name-${index}`">Activity Name</Label>
+            <Select :id="`activity-name-${index}`" v-model="activity.name" required>
+              <option value="" disabled>Select an activity</option>
+              <option v-for="option in activityOptions" :key="option" :value="option">{{ option }}</option>
+            </Select>
+          </div>
+          <div class="grid gap-2 md:col-span-2">
+            <Label :for="`duration-value-${index}`">Duration Value</Label>
+            <Input :id="`duration-value-${index}`" v-model="activity.duration_value" type="number" required />
+          </div>
+          <div class="grid gap-2 md:col-span-2">
+            <Label :for="`duration-unit-${index}`">Duration Unit</Label>
+            <Select :id="`duration-unit-${index}`" v-model="activity.duration_unit" required>
+              <option value="" disabled>Select a unit</option>
+              <option v-for="option in durationUnits" :key="option" :value="option">{{ option }}</option>
+            </Select>
+          </div>
+          <div class="grid gap-2 md:col-span-2">
+            <Label :for="`frequency-value-${index}`">Frequency Value</Label>
+            <Input :id="`frequency-value-${index}`" v-model="activity.frequency_value" type="number" required />
+          </div>
+          <div class="grid gap-2 md:col-span-2">
+            <Label :for="`frequency-unit-${index}`">Frequency Unit</Label>
+            <Select :id="`frequency-unit-${index}`" v-model="activity.frequency_unit" required>
+              <option value="" disabled>Select a unit</option>
+              <option v-for="option in frequencyUnits" :key="option" :value="option">{{ option }}</option>
+            </Select>
+          </div>
+          <div class="flex justify-end md:col-span-1">
+            <Button v-if="activities.length > 1" type="button" variant="destructive" size="icon" @click="removeActivity(index)">
+              <Trash2 class="size-4" />
+            </Button>
+          </div>
+        </div>
 
-        <v-btn
-          color="#2EC4B6"
-          @click="addActivity"
-          class="mt-2"
-        >
-          Add Another Activity
-        </v-btn>
-      </v-card-text>
-    </v-card>
+        <Button type="button" variant="secondary" @click="addActivity"> Add Another Activity </Button>
+      </CardContent>
+    </Card>
 
-      <!-- Daily Activity Log Section -->
-      <v-card class="mb-6">
-          <v-card-title class="text-h6">Daily Activity Log</v-card-title>
-          <v-card-text>
-              <!-- This will be replaced with the DailyActivityLog component -->
-              <div class="text-center py-4">
-                  <v-icon size="48" color="grey">mdi-calendar-text</v-icon>
-                  <p class="text-grey mt-2">Daily Activity Log Component will be added here</p>
-              </div>
-          </v-card-text>
-      </v-card>
+    <!-- Daily Activity Log Section -->
+    <Card class="mb-6">
+      <CardHeader>
+        <CardTitle>Daily Activity Log</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="py-4 text-center text-muted-foreground">
+          <CalendarDays class="mx-auto size-12" />
+          <p class="mt-2">Daily Activity Log Component will be added here</p>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- General Notes Section -->
-    <v-card>
-      <v-card-title class="text-h6">General Notes</v-card-title>
-      <v-card-text>
-        <v-textarea
-          v-model="generalNotes"
-          label="Notes about pet's activities"
-          rows="4"
-          auto-grow
-        ></v-textarea>
-      </v-card-text>
-    </v-card>
+    <Card>
+      <CardHeader>
+        <CardTitle>General Notes</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Textarea v-model="generalNotes" rows="4" placeholder="Notes about pet's activities" />
+      </CardContent>
+    </Card>
 
     <!-- Add save button at the bottom -->
     <div class="mt-6 flex justify-end">
-      <v-btn
-        type="submit"
-        color="#2EC4B6"
-        :disabled="!valid"
-        class="px-6"
-        @click="submitForm"
-      >
-        Save Activity Information
-      </v-btn>
+      <Button type="submit" class="px-6"> Save Activity Information </Button>
     </div>
-  </v-form>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import { useForm } from '@inertiajs/inertia-vue3';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import axios from 'axios';
-import type { VForm } from 'vuetify/components';
-import { withDefaults } from 'vue';
+import { CalendarDays, Trash2 } from 'lucide-vue-next';
+import { onMounted, ref, withDefaults } from 'vue';
 
 interface Activity {
     id?: number;
@@ -145,8 +114,7 @@ const props = withDefaults(defineProps<{
     petInfo: () => []
 });
 
-const valid = ref(false);
-const form = ref<VForm | null>(null);
+const form = ref<HTMLFormElement | null>(null);
 
 // Form data
 const activities = ref<Activity[]>(props.initialData || [{
@@ -209,14 +177,11 @@ const removeActivity = async (index: number) => {
 };
 
 const validate = async () => {
-    if (!form.value) return false;
-    const { valid } = await form.value.validate();
-    return valid;
+    return form.value?.reportValidity() ?? false;
 };
 
 const reset = () => {
-    if (!form.value) return;
-    form.value.reset();
+    form.value?.reset();
     activities.value = [{
         name: '',
         duration_value: '',
@@ -244,8 +209,7 @@ const submitForm = async () => {
 
     try {
         const response = await axios.post(route('activities.store', { pet: props.petId }), formData);
-        console.log('Save response:', response.data);
-        
+
         // Update activities with all activities for the pet
         if (response.data && response.data.length > 0) {
             activities.value = response.data.map((activity: any) => ({
@@ -266,9 +230,7 @@ const submitForm = async () => {
 // Load saved activities
 const loadActivities = async () => {
     try {
-        console.log('Loading activities for pet:', props.petId);
         const response = await axios.get(route('activities.index', { pet: props.petId }));
-        console.log('Received activities:', response.data);
 
         if (response.data && response.data.length > 0) {
             activities.value = response.data.map((activity: any) => ({
@@ -279,9 +241,7 @@ const loadActivities = async () => {
                 frequency_unit: activity.frequency_unit || ''
             }));
             generalNotes.value = response.data[0].notes || '';
-            console.log('Mapped activities:', activities.value);
         } else {
-            console.log('No activities found');
             // Reset to default state if no activities found
             activities.value = [{
                 name: '',
@@ -310,21 +270,3 @@ defineExpose({
     submitForm
 });
 </script>
-
-<style scoped>
-.v-btn {
-  text-transform: none !important;
-}
-
-:deep(.v-field--focused) {
-  color: #FF9F1C !important;
-}
-
-:deep(.v-field--focused .v-label) {
-  color: #FF9F1C !important;
-}
-
-:deep(.v-field--focused .v-field__outline) {
-  border-color: #FF9F1C !important;
-}
-</style>

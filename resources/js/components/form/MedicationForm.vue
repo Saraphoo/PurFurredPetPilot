@@ -1,132 +1,89 @@
 <template>
-  <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-    <v-card class="mb-6">
-      <v-card-title class="text-h6">Medication Details</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="6">
-            <v-text-field
-              v-model="medicationName"
-              label="Medication Name"
-              :rules="[v => !!v || 'Medication name is required']"
-              required
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="dosage"
-              label="Dosage"
-              :rules="[v => !!v || 'Dosage is required']"
-              required
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-select
-              v-model="frequency"
-              :items="frequencyOptions"
-              label="Frequency"
-              :rules="[v => !!v || 'Frequency is required']"
-              required
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-select>
-          </v-col>
-          <v-col cols="6">
-            <v-select
-              v-model="timeOfDay"
-              :items="timeOfDayOptions"
-              label="Preferred Time of Day"
-              :rules="[v => !!v || 'Time of day is required']"
-              required
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-select>
-          </v-col>
-          <v-col cols="12">
-            <v-textarea
-              v-model="notes"
-              label="Medication Notes"
-              rows="4"
-              auto-grow
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-textarea>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+  <form ref="form" @submit.prevent="submitForm">
+    <Card class="mb-6">
+      <CardHeader>
+        <CardTitle>Medication Details</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="grid gap-2">
+            <Label for="medication-name">Medication Name</Label>
+            <Input id="medication-name" v-model="medicationName" required />
+          </div>
+          <div class="grid gap-2">
+            <Label for="dosage">Dosage</Label>
+            <Input id="dosage" v-model="dosage" required />
+          </div>
+          <div class="grid gap-2">
+            <Label for="frequency">Frequency</Label>
+            <Select id="frequency" v-model="frequency" required>
+              <option value="" disabled>Select a frequency</option>
+              <option v-for="option in frequencyOptions" :key="option" :value="option">{{ option }}</option>
+            </Select>
+          </div>
+          <div class="grid gap-2">
+            <Label for="time-of-day">Preferred Time of Day</Label>
+            <Select id="time-of-day" v-model="timeOfDay" required>
+              <option value="" disabled>Select a time of day</option>
+              <option v-for="option in timeOfDayOptions" :key="option" :value="option">{{ option }}</option>
+            </Select>
+          </div>
+          <div class="grid gap-2 md:col-span-2">
+            <Label for="medication-notes">Medication Notes</Label>
+            <Textarea id="medication-notes" v-model="notes" rows="4" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
-    <v-card>
-      <v-card-title class="text-h6">Prescription Information</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="6">
-            <v-text-field
-              v-model="prescribingVet"
-              label="Prescribing Veterinarian"
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="pharmacy"
-              label="Pharmacy"
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="refillDate"
-              label="Refill Date"
-              type="date"
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="expirationDate"
-              label="Expiration Date"
-              type="date"
-              color="#2EC4B6"
-              class="custom-input"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <Card>
+      <CardHeader>
+        <CardTitle>Prescription Information</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="grid gap-2">
+            <Label for="prescribing-vet">Prescribing Veterinarian</Label>
+            <Input id="prescribing-vet" v-model="prescribingVet" />
+          </div>
+          <div class="grid gap-2">
+            <Label for="pharmacy">Pharmacy</Label>
+            <Input id="pharmacy" v-model="pharmacy" />
+          </div>
+          <div class="grid gap-2">
+            <Label for="refill-date">Refill Date</Label>
+            <Input id="refill-date" v-model="refillDate" type="date" />
+          </div>
+          <div class="grid gap-2">
+            <Label for="expiration-date">Expiration Date</Label>
+            <Input id="expiration-date" v-model="expirationDate" type="date" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- Add save button at the bottom -->
     <div class="mt-6 flex justify-end">
-      <v-btn
-        type="submit"
-        color="#2EC4B6"
-        :disabled="!valid"
-        class="px-6"
-      >
-        Save Medication Information
-      </v-btn>
+      <Button type="submit" class="px-6"> Save Medication Information </Button>
     </div>
-  </v-form>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/vue3';
-import type { VForm } from 'vuetify/components';
+import { ref } from 'vue';
 
 const props = defineProps<{
     petId: number;
 }>();
 
-const valid = ref(false);
-const form = ref<VForm | null>(null);
+const form = ref<HTMLFormElement | null>(null);
 
 // Form data
 const medicationName = ref('');
@@ -160,6 +117,8 @@ const timeOfDayOptions = [
 ];
 
 const submitForm = () => {
+    if (!form.value?.reportValidity()) return;
+
     const formData = {
         pet_id: props.petId,
         medication_name: medicationName.value,
@@ -182,14 +141,11 @@ const submitForm = () => {
 };
 
 const validate = async () => {
-    if (!form.value) return false;
-    const { valid } = await form.value.validate();
-    return valid;
+    return form.value?.reportValidity() ?? false;
 };
 
 const reset = () => {
-    if (!form.value) return;
-    form.value.reset();
+    form.value?.reset();
     medicationName.value = '';
     dosage.value = '';
     frequency.value = '';
@@ -217,25 +173,3 @@ defineExpose({
     submitForm
 });
 </script>
-
-<style scoped>
-.custom-input :deep(.v-field--focused) {
-  border-color: #FF9F1C !important;
-}
-
-.custom-input :deep(.v-field__outline) {
-  border-color: #2EC4B6 !important;
-}
-
-.custom-input :deep(.v-field--focused .v-field__outline) {
-  border-color: #FF9F1C !important;
-}
-
-.custom-input :deep(.v-field--focused .v-label) {
-  color: #FF9F1C !important;
-}
-
-.v-btn {
-  text-transform: none !important;
-}
-</style> 

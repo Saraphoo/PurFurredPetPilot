@@ -34,9 +34,4 @@ class Event extends Model
     {
         return $this->belongsTo(Pet::class);
     }
-
-    public function authorize(User $user): bool
-    {
-        return $this->user_id === $user->id;
-    }
 } 

@@ -9,6 +9,8 @@ class DailyActivity extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'activity_id',
         'duration_value',

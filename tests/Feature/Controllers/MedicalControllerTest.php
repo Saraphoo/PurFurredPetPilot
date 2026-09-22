@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\Medication;
 use App\Models\Pet;
 use App\Models\SpecialNeed;
-use App\Models\Medication;
-use App\Models\DailyMedication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,10 +19,9 @@ class MedicalControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Create a user and pet for testing
+
         $this->user = User::factory()->create();
-        $this->pet = Pet::factory()->create(['user_id' => $this->user->id]);
+        $this->pet = Pet::factory()->ownedBy($this->user)->create();
     }
 
     /** @test */
@@ -55,7 +53,6 @@ class MedicalControllerTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        // Assert special needs were created
         $this->assertDatabaseHas('special_needs', [
             'pet_id' => $this->pet->id,
             'name' => 'Diabetes',
@@ -63,7 +60,6 @@ class MedicalControllerTest extends TestCase
             'notes' => 'Requires insulin'
         ]);
 
-        // Assert medications were created
         $this->assertDatabaseHas('medications', [
             'pet_id' => $this->pet->id,
             'name' => 'Insulin',
@@ -84,7 +80,6 @@ class MedicalControllerTest extends TestCase
     /** @test */
     public function it_can_update_medical_information()
     {
-        // Create initial data
         SpecialNeed::create([
             'pet_id' => $this->pet->id,
             'name' => 'Old Condition',
@@ -110,13 +105,11 @@ class MedicalControllerTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        // Assert old data was deleted
         $this->assertDatabaseMissing('special_needs', [
             'pet_id' => $this->pet->id,
             'name' => 'Old Condition'
         ]);
 
-        // Assert new data was created
         $this->assertDatabaseHas('special_needs', [
             'pet_id' => $this->pet->id,
             'name' => 'New Condition',
@@ -136,10 +129,10 @@ class MedicalControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->post(route('medical.log-daily', ['pet' => $this->pet->id]), [
+            ->post(route('medical.log', ['pet' => $this->pet->id]), [
                 'medication_id' => $medication->id,
-                'date' => '2024-01-01',
-                'was_given' => true,
+                'given_at' => '2024-01-01 08:00:00',
+                'dosage_given' => 1,
                 'notes' => 'Administered as prescribed'
             ]);
 
@@ -148,8 +141,7 @@ class MedicalControllerTest extends TestCase
 
         $this->assertDatabaseHas('daily_medications', [
             'medication_id' => $medication->id,
-            'date' => '2024-01-01',
-            'was_given' => true,
+            'dosage_given' => 1,
             'notes' => 'Administered as prescribed'
         ]);
     }
@@ -158,8 +150,20 @@ class MedicalControllerTest extends TestCase
     public function it_validates_required_fields_when_logging_daily_medication()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('medical.log-daily', ['pet' => $this->pet->id]), []);
+            ->post(route('medical.log', ['pet' => $this->pet->id]), []);
 
-        $response->assertSessionHasErrors(['medication_id', 'date', 'was_given']);
+        $response->assertSessionHasErrors(['medication_id', 'given_at', 'dosage_given']);
     }
-} 
+
+    /** @test */
+    public function a_user_who_is_not_a_caretaker_cannot_store_medical_information()
+    {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('medical.store', ['pet' => $this->pet->id]), [
+                'special_needs' => [],
+                'medications' => [],
+            ]);
+
+        $response->assertForbidden();
+    }
+}

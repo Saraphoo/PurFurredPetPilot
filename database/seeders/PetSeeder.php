@@ -28,7 +28,6 @@ class PetSeeder extends Seeder
             'sex' => 'M',
             'breed' => 'Golden Retriever',
             'weight' => '50 lbs',
-            'user_id' => $user->id
         ]);
 
         Pet::create([
@@ -38,7 +37,6 @@ class PetSeeder extends Seeder
             'sex' => 'F',
             'breed' => 'Domestic Shorthair',
             'weight' => '10 lbs',
-            'user_id' => $user->id
         ]);
     }
 }
