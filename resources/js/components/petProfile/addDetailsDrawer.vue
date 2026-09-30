@@ -27,11 +27,11 @@ function closeDrawer() {
     <div v-if="isDrawerOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40" @click="closeDrawer"></div>
 
     <!-- Drawer Component -->
-    <div class="fixed right-0 top-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300"
+    <div class="fixed right-0 top-0 h-full w-64 bg-background text-foreground shadow-lg z-50 transform transition-transform duration-300"
          :class="{'translate-x-0': isDrawerOpen, 'translate-x-full': !isDrawerOpen}">
         <div class="flex justify-between items-center px-4 py-2 border-b">
             <h2 class="text-lg font-bold">Additional Details</h2>
-            <button @click="closeDrawer" class="text-gray-600 hover:text-gray-900">
+            <button @click="closeDrawer" class="text-muted-foreground hover:text-foreground">
                 <!-- Simple close "X" icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -45,7 +45,7 @@ function closeDrawer() {
                 v-for="(button, index) in props.buttons"
                 :key="index"
                 @click="button.action"
-                class="w-full text-left bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg"
+                class="w-full text-left bg-muted text-foreground hover:bg-accent px-4 py-2 rounded-lg"
             >
                 {{ button.label }}
             </button>

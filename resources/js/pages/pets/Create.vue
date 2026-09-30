@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/inertia-vue3';
+import { useForm } from '@inertiajs/vue3';
 import AppLayout from "@/layouts/AppLayout.vue";
 import { type BreadcrumbItem } from '@/types';
 import {computed, ref} from "vue";
@@ -60,73 +60,73 @@ defineProps<{
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create a New Pet</h1>
+        <div class="max-w-4xl mx-auto p-6 bg-card text-card-foreground rounded-lg shadow-md">
+            <h1 class="text-2xl font-bold mb-6 text-foreground">Create a New Pet</h1>
             <form @submit.prevent="submit" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Name and Date of Birth fields -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                        <label for="name" class="block text-sm font-medium text-foreground">Name</label>
                         <input v-model="form.name" type="text" id="name" class="mt-1 block w-full" />
-                        <span v-if="form.errors.name" class="text-red-600 text-sm">{{ form.errors.name }}</span>
+                        <span v-if="form.errors.name" class="text-destructive text-sm">{{ form.errors.name }}</span>
                     </div>
                     <div>
-                        <label for="DOB" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+                        <label for="DOB" class="block text-sm font-medium text-foreground">Date of Birth</label>
                         <input v-model="form.DOB" type="date" id="DOB" class="mt-1 block w-full" />
-                        <span v-if="form.errors.DOB" class="text-red-600 text-sm">{{ form.errors.DOB }}</span>
+                        <span v-if="form.errors.DOB" class="text-destructive text-sm">{{ form.errors.DOB }}</span>
                     </div>
 
                     <!-- Pet Type and Species Dropdowns -->
                     <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
+                        <label for="type" class="block text-sm font-medium text-foreground">Type</label>
                         <select v-model="form.type" id="type" class="mt-1 block w-full">
                             <option value="" disabled>Select Type</option>
                             <option v-for="type in petTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
                         </select>
-                        <span v-if="form.errors.type" class="text-red-600 text-sm">{{ form.errors.type }}</span>
+                        <span v-if="form.errors.type" class="text-destructive text-sm">{{ form.errors.type }}</span>
                     </div>
 
                     <div>
-                        <label for="species" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Species</label>
+                        <label for="species" class="block text-sm font-medium text-foreground">Species</label>
                         <select v-model="form.species" id="species" class="mt-1 block w-full" :disabled="!form.type">
                             <option value="" disabled>Select Species</option>
                             <option v-for="species in availableSpecies" :key="species" :value="species">{{ species }}</option>
                         </select>
-                        <span v-if="form.errors.species" class="text-red-600 text-sm">{{ form.errors.species }}</span>
+                        <span v-if="form.errors.species" class="text-destructive text-sm">{{ form.errors.species }}</span>
                     </div>
 
                     <!-- Color and Sex -->
                     <div>
-                        <label for="color" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
+                        <label for="color" class="block text-sm font-medium text-foreground">Color</label>
                         <select v-model="form.color" id="color" class="mt-1 block w-full">
                             <option value="" disabled>Select Color</option>
                             <option v-for="color in colors" :key="color" :value="color">{{ color }}</option>
                         </select>
-                        <span v-if="form.errors.color" class="text-red-600 text-sm">{{ form.errors.color }}</span>
+                        <span v-if="form.errors.color" class="text-destructive text-sm">{{ form.errors.color }}</span>
                     </div>
 
                     <div>
-                        <label for="sex" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sex</label>
+                        <label for="sex" class="block text-sm font-medium text-foreground">Sex</label>
                         <select v-model="form.sex" id="sex" class="mt-1 block w-full">
                             <option value="" disabled>Select Sex</option>
                             <option v-for="option in sexOptions" :key="option.value" :value="option.value">
                                 {{ option.label }}
                             </option>
                         </select>
-                        <span v-if="form.errors.sex" class="text-red-600 text-sm">{{ form.errors.sex }}</span>
+                        <span v-if="form.errors.sex" class="text-destructive text-sm">{{ form.errors.sex }}</span>
                     </div>
 
                     <!-- Neutered Checkbox -->
                     <div>
-                        <label for="neutered" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Neutered</label>
+                        <label for="neutered" class="block text-sm font-medium text-foreground">Neutered</label>
                         <input v-model="form.neutered" type="checkbox" id="neutered" class="mt-1 block" />
-                        <span v-if="form.errors.neutered" class="text-red-600 text-sm">{{ form.errors.neutered }}</span>
+                        <span v-if="form.errors.neutered" class="text-destructive text-sm">{{ form.errors.neutered }}</span>
                     </div>
 
                     <!-- Other fields (e.g., breed, weight, etc.) go here -->
                 </div>
 
-                <button type="submit" class="px-4 py-2 bg-[#2EC4B6] text-white rounded-md shadow hover:bg-[#CBF3F0] transition-colors">Create Pet</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground font-medium rounded-md shadow hover:bg-primary/90 transition-colors">Create Pet</button>
             </form>
         </div>
     </AppLayout>

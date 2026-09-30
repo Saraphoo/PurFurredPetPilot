@@ -2,12 +2,15 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('chat_sessions', function (Blueprint $table) {
             $table->id();
@@ -22,8 +25,11 @@ return new class extends Migration
         DB::statement('CREATE INDEX chat_sessions_embedding_idx ON chat_sessions USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)');
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('chat_sessions');
     }
-}; 
+};

@@ -9,6 +9,8 @@ class Medication extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'pet_id',
         'name',

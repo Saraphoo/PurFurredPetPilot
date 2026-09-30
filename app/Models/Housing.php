@@ -11,13 +11,12 @@ class Housing extends Model
 
     protected $fillable = [
         'pet_id',
+        'total_space_value',
+        'total_space_unit',
         'housing_type',
-        'total_indoor_space_value',
-        'total_indoor_space_unit',
-        'total_outdoor_space_value',
-        'total_outdoor_space_unit',
         'flooring_type',
-        'substrate'
+        'bedding_type',
+        'notes'
     ];
 
     public function pet()

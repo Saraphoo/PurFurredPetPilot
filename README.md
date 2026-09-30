@@ -6,13 +6,14 @@
 
 - **AI-Powered Insights** – Analyze pet health data and get intelligent recommendations.
 - **Pet Profiles** – Store medical history, dietary needs, activity logs, and more.
+- **Caretaker Profiles** - Communicate your pets care effectively across multiple caretakers.
 - **Appointment Scheduling** – Manage vet visits and medication reminders.
 - **Notification System** – Stay up to date on upcoming tasks or alerts.
 - **Modern UI** – Clean, user-friendly interface with responsive design.
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Laravel 12.x
+- **Backend**: Laravel 12.x <-- Let's upgrade if available
 - **Frontend**: Tailwind CSS, Vite
 - **Containerization**: Laravel Sail (Docker)
 - **Database**: MySQL

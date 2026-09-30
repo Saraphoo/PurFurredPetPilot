@@ -50,15 +50,17 @@ class User extends Authenticatable
         ];
     }
 
-    // Pets that the user owns (through user_id in pets table)
-    public function pets()
+    // All pets this user is a caretaker of (any role), via the pet_user pivot table
+    public function pets(): BelongsToMany
     {
-        return $this->hasMany(Pet::class);
+        return $this->belongsToMany(Pet::class, 'pet_user')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
-    // Pets that the user has access to through the pet_user pivot table
-    public function sharedPets()
+    // Pets this user owns
+    public function ownedPets(): BelongsToMany
     {
-        return $this->belongsToMany(Pet::class, 'pet_user');
+        return $this->pets()->wherePivot('role', Pet::ROLE_OWNER);
     }
 }

@@ -12,7 +12,12 @@ class Behavior extends Model
     protected $fillable = [
         'pet_id',
         'behaviors',
-        'notes'
+        'behavior_notes',
+        'general_notes'
+    ];
+
+    protected $casts = [
+        'behaviors' => 'array',
     ];
 
     public function pet()
