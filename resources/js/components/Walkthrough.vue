@@ -91,17 +91,17 @@ onMounted(() => {
         <DialogContent 
             :class="[
                 'fixed z-[1000] max-w-md p-6 rounded-lg shadow-lg transition-all duration-300',
-                'bg-white dark:bg-gray-800',
+                'bg-background',
                 steps[currentStep].position === 'center' ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' :
                 steps[currentStep].position === 'sidebar' ? 'left-[280px] top-1/2 -translate-y-1/2' :
                 'right-4 top-1/2 -translate-y-1/2'
             ]"
         >
             <DialogHeader>
-                <DialogTitle class="text-2xl font-bold text-[#2EC4B6] mb-2">
+                <DialogTitle class="text-2xl font-bold text-foreground mb-2">
                     {{ steps[currentStep].title }}
                 </DialogTitle>
-                <DialogDescription class="text-gray-600 dark:text-gray-300">
+                <DialogDescription class="text-muted-foreground">
                     {{ steps[currentStep].description }}
                 </DialogDescription>
             </DialogHeader>
@@ -110,13 +110,13 @@ onMounted(() => {
                 <Button 
                     variant="ghost" 
                     @click="skipWalkthrough"
-                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    class="text-muted-foreground hover:text-foreground"
                 >
                     Skip Tour
                 </Button>
                 <Button 
                     @click="nextStep"
-                    class="bg-[#FF9F1C] hover:bg-[#FF9F1C]/90 text-white"
+                    class="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
                 >
                     {{ currentStep === steps.length - 1 ? 'Get Started' : 'Next' }}
                 </Button>

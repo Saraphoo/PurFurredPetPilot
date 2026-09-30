@@ -446,7 +446,7 @@ const getEventsForDate = (date: Date): CalendarEvent[] => {
       start: new Date(date.setHours(8, 0)),
       end: new Date(date.setHours(9, 0)),
       petName: pet.name,
-      color: '#4CAF50',
+      color: '#2EC4B6',
       time: '08:00'
     });
     
@@ -457,7 +457,7 @@ const getEventsForDate = (date: Date): CalendarEvent[] => {
       start: new Date(date.setHours(18, 0)),
       end: new Date(date.setHours(19, 0)),
       petName: pet.name,
-      color: '#2196F3',
+      color: '#CBF3F0',
       time: '18:00'
     });
   });
@@ -538,15 +538,15 @@ const eventTypes = [
 const getEventColor = (type: string) => {
   switch (type) {
     case 'feeding':
-      return '#4CAF50';
+      return '#2EC4B6';
     case 'vet':
-      return '#F44336';
+      return '#FCA5A5';
     case 'grooming':
-      return '#9C27B0';
+      return '#D8B4FE';
     case 'medication':
-      return '#FF9800';
+      return '#FF9F1C';
     default:
-      return '#2196F3';
+      return '#CBF3F0';
   }
 };
 
@@ -794,8 +794,8 @@ const closeAddEventModal = () => {
 }
 
 .btn.active {
-  background: #2196F3;
-  color: white;
+  background: hsl(var(--primary));
+  color: hsl(var(--foreground));
 }
 
 /* Month View Styles */
@@ -803,8 +803,8 @@ const closeAddEventModal = () => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
   border-bottom: none;
 }
 
@@ -819,8 +819,8 @@ const closeAddEventModal = () => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
   overflow-y: auto;
   max-height: calc(100vh - 300px);
 }
@@ -844,15 +844,15 @@ const closeAddEventModal = () => {
 .week-header {
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
-  border-bottom: 1px solid #e0e0e0;
-  background: #f5f5f5;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
 }
 
 .week-day-header {
   padding: 10px;
   text-align: center;
   font-weight: 500;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid hsl(var(--border));
 }
 
 .week-day-header:last-child {
@@ -869,8 +869,8 @@ const closeAddEventModal = () => {
 
 .time-column {
   width: 60px;
-  background: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
+  background: hsl(var(--muted));
+  border-right: 1px solid hsl(var(--border));
   position: sticky;
   left: 0;
   z-index: 1;
@@ -879,9 +879,9 @@ const closeAddEventModal = () => {
 .time-slot {
   height: 60px;
   padding: 5px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid hsl(var(--border));
   font-size: 12px;
-  color: #666;
+  color: hsl(var(--muted-foreground));
 }
 
 .week-grid {
@@ -892,7 +892,7 @@ const closeAddEventModal = () => {
 }
 
 .week-day-column {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid hsl(var(--border));
 }
 
 .week-day-column:last-child {
@@ -901,15 +901,15 @@ const closeAddEventModal = () => {
 
 /* Day View Styles */
 .day-view {
-  border: 1px solid #e0e0e0;
+  border: 1px solid hsl(var(--border));
   border-radius: 4px;
 }
 
 .day-header {
   display: grid;
   grid-template-columns: 60px 1fr;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
+  background: hsl(var(--muted));
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .day-header-content {
@@ -927,14 +927,14 @@ const closeAddEventModal = () => {
 }
 
 .day-grid {
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid hsl(var(--border));
 }
 
 /* Event Styles */
 .event {
   padding: 4px 8px;
   border-radius: 4px;
-  color: white;
+  color: hsl(var(--foreground));
   font-size: 12px;
   margin: 2px 0;
   cursor: pointer;
@@ -974,7 +974,7 @@ const closeAddEventModal = () => {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .close-button {
@@ -982,14 +982,14 @@ const closeAddEventModal = () => {
   border: none;
   padding: 4px;
   cursor: pointer;
-  color: #666;
+  color: hsl(var(--muted-foreground));
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .close-button:hover {
-  background: #f5f5f5;
-  color: #333;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
 }
 
 /* Form styles */
@@ -1016,13 +1016,13 @@ const closeAddEventModal = () => {
 
 .form-group label {
   font-weight: 500;
-  color: #333;
+  color: hsl(var(--foreground));
   font-size: 14px;
 }
 
 .form-input {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid hsl(var(--input));
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s;
@@ -1031,12 +1031,12 @@ const closeAddEventModal = () => {
 
 .form-input:focus {
   outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3);
 }
 
 .form-input::placeholder {
-  color: #999;
+  color: hsl(var(--muted-foreground));
 }
 
 textarea.form-input {
@@ -1049,7 +1049,7 @@ textarea.form-input {
   justify-content: flex-end;
   gap: 12px;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid hsl(var(--border));
 }
 
 .btn {
@@ -1063,21 +1063,21 @@ textarea.form-input {
 }
 
 .btn-primary {
-  background: #2196F3;
-  color: white;
+  background: hsl(var(--primary));
+  color: hsl(var(--foreground));
 }
 
 .btn-primary:hover {
-  background: #1976D2;
+  background: hsl(var(--primary) / 0.9);
 }
 
 .btn-secondary {
-  background: #f5f5f5;
-  color: #333;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
 }
 
 .btn-secondary:hover {
-  background: #e0e0e0;
+  background: hsl(var(--border));
 }
 
 /* Loading and Error States */
@@ -1097,8 +1097,8 @@ textarea.form-input {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #2196F3;
+  border: 4px solid hsl(var(--muted));
+  border-top: 4px solid hsl(var(--primary));
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -1107,8 +1107,8 @@ textarea.form-input {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: #f44336;
-  color: white;
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
   padding: 16px;
   border-radius: 4px;
   display: flex;
@@ -1133,12 +1133,12 @@ textarea.form-input {
 
 .detail-label {
   font-weight: 500;
-  color: #666;
+  color: hsl(var(--muted-foreground));
   width: 100px;
 }
 
 .detail-value {
-  color: #333;
+  color: hsl(var(--foreground));
   flex: 1;
 }
 </style>

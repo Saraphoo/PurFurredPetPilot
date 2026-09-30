@@ -72,8 +72,8 @@ function goToPetProfile(petId : number) {
 
         <!-- Pet Information Section -->
         <div class="text-center">
-            <p class="font-semibold text-lg text-gray-900">{{ pet.name }}</p>
-            <p class="text-gray-600">{{ pet.type }} | {{ formattedAge }}</p>
+            <p class="font-semibold text-lg text-foreground">{{ pet.name }}</p>
+            <p class="text-muted-foreground">{{ pet.type }} | {{ formattedAge }}</p>
         </div>
     </Card>
 </template>

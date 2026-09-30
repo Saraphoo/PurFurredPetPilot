@@ -47,28 +47,28 @@ function handleSubmit() {
 </script>
 
 <template>
-    <div class="bg-white p-4 rounded-lg shadow">
+    <div class="bg-card text-card-foreground p-4 rounded-lg shadow">
         <h3 class="text-lg font-semibold mb-4">Activity Details</h3>
 
         <!-- View Mode -->
         <div v-if="!isEditing && activityData" class="space-y-2">
             <div class="grid grid-cols-2 gap-2">
-                <p class="text-gray-600">Last Activity:</p>
+                <p class="text-muted-foreground">Last Activity:</p>
                 <p>{{ activityData.lastActivity }}</p>
                 
-                <p class="text-gray-600">Activity Type:</p>
+                <p class="text-muted-foreground">Activity Type:</p>
                 <p>{{ activityData.activityType }}</p>
                 
-                <p class="text-gray-600">Duration:</p>
+                <p class="text-muted-foreground">Duration:</p>
                 <p>{{ activityData.duration }} minutes</p>
                 
-                <p class="text-gray-600">Intensity:</p>
+                <p class="text-muted-foreground">Intensity:</p>
                 <p>{{ activityData.intensity }}</p>
                 
-                <p class="text-gray-600">Notes:</p>
+                <p class="text-muted-foreground">Notes:</p>
                 <p>{{ activityData.notes }}</p>
                 
-                <p class="text-gray-600">Time:</p>
+                <p class="text-muted-foreground">Time:</p>
                 <p>{{ new Date(activityData.timestamp).toLocaleString() }}</p>
             </div>
         </div>
@@ -77,10 +77,10 @@ function handleSubmit() {
         <form v-else @submit.prevent="handleSubmit" class="space-y-4">
             <div class="space-y-2">
                 <label class="block">
-                    <span class="text-gray-700">Activity Type</span>
+                    <span class="text-foreground">Activity Type</span>
                     <select 
                         v-model="formData.activityType"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        class="mt-1 block w-full rounded-md border-input shadow-sm"
                         required
                     >
                         <option value="">Select activity type</option>
@@ -91,21 +91,21 @@ function handleSubmit() {
                 </label>
 
                 <label class="block">
-                    <span class="text-gray-700">Duration (minutes)</span>
+                    <span class="text-foreground">Duration (minutes)</span>
                     <input
                         type="number"
                         v-model="formData.duration"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        class="mt-1 block w-full rounded-md border-input shadow-sm"
                         min="0"
                         required
                     />
                 </label>
 
                 <label class="block">
-                    <span class="text-gray-700">Intensity</span>
+                    <span class="text-foreground">Intensity</span>
                     <select
                         v-model="formData.intensity"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        class="mt-1 block w-full rounded-md border-input shadow-sm"
                         required
                     >
                         <option v-for="level in intensityLevels" :key="level" :value="level">
@@ -115,17 +115,17 @@ function handleSubmit() {
                 </label>
 
                 <label class="block">
-                    <span class="text-gray-700">Notes</span>
+                    <span class="text-foreground">Notes</span>
                     <textarea
                         v-model="formData.notes"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        class="mt-1 block w-full rounded-md border-input shadow-sm"
                         rows="3"
                     ></textarea>
                 </label>
             </div>
 
             <div class="flex justify-end space-x-2">
-                <Button type="submit" class="bg-blue-500 text-white">
+                <Button type="submit">
                     Save Activity
                 </Button>
             </div>

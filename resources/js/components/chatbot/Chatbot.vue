@@ -112,7 +112,7 @@ const sendMessage = async () => {
     <!-- Floating Action Button -->
     <button
         @click="isDrawerOpen = true"
-        class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-[#FF9F1C] text-white shadow-lg hover:bg-[#FF9F1C]/90 flex items-center justify-center z-[100] transition-colors"
+        class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:bg-secondary/90 flex items-center justify-center z-[100] transition-colors"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z" />
@@ -139,14 +139,14 @@ const sendMessage = async () => {
                     <h2 class="text-2xl font-semibold text-foreground">Pet Care Assistant</h2>
                     <button
                         @click="startNewChat"
-                        class="px-3 py-1 text-sm bg-[#2EC4B6] text-white rounded-lg hover:bg-[#2EC4B6]/90 transition-colors"
+                        class="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                     >
                         New Chat
                     </button>
                 </div>
                 <button
                     @click="isDrawerOpen = false"
-                    class="p-2 rounded-full hover:bg-[#2EC4B6]/10 transition-colors text-[#2EC4B6]"
+                    class="p-2 rounded-full hover:bg-accent transition-colors text-foreground"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -158,7 +158,7 @@ const sendMessage = async () => {
             <div class="mb-4">
                 <select
                     v-model="selectedPetId"
-                    class="w-full p-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#FF9F1C] focus:border-[#FF9F1C]"
+                    class="w-full p-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                 >
                     <option :value="null">Select a pet</option>
                     <option v-for="pet in userPets" :key="pet.id" :value="pet.id">
@@ -173,15 +173,15 @@ const sendMessage = async () => {
                     <div :class="[
                         'p-3 rounded-lg max-w-[85%]',
                         message.role === 'user'
-                            ? 'bg-[#FF9F1C] text-white ml-auto'
-                            : 'bg-muted text-black'
+                            ? 'bg-secondary text-secondary-foreground ml-auto'
+                            : 'bg-muted text-foreground'
                     ]">
                         {{ message.content }}
                     </div>
                 </div>
                 <!-- Loading Indicator -->
                 <div v-if="isLoading" class="mb-4">
-                    <div class="p-3 rounded-lg max-w-[85%] bg-muted text-black flex items-center space-x-2">
+                    <div class="p-3 rounded-lg max-w-[85%] bg-muted text-foreground flex items-center space-x-2">
                         <div class="animate-spin rounded-full h-4 w-4 border-2 border-[#2EC4B6] border-t-transparent"></div>
                         <span>Thinking...</span>
                     </div>
@@ -192,7 +192,7 @@ const sendMessage = async () => {
             <div class="mt-auto">
                 <textarea
                     v-model="userMessage"
-                    class="w-full p-3 border border-input rounded-lg resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#FF9F1C] focus:border-[#FF9F1C]"
+                    class="w-full p-3 border border-input rounded-lg resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                     rows="3"
                     placeholder="Ask about pet care..."
                     @keyup.enter.exact.prevent="sendMessage(); userMessage = ''"
@@ -200,7 +200,7 @@ const sendMessage = async () => {
                 ></textarea>
 
                 <Button
-                    class="w-full mt-2 bg-[#2EC4B6] text-white hover:bg-[#2EC4B6]/90"
+                    class="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
                     :disabled="isLoading || !userMessage.trim()"
                     @click="sendMessage"
                 >

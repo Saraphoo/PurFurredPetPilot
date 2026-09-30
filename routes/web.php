@@ -14,9 +14,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\PetCaretakerController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+Route::redirect('/', '/dashboard')->name('home');
 
 Route::get('dashboard', [PetController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
